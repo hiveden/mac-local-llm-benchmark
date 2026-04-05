@@ -13,3 +13,5 @@ __pycache__/
 *.tmp
 *.log
 .idea/
+.gitignore 加 private-docs/
+private-docs/
