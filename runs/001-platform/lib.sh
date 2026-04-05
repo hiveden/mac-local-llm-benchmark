@@ -202,7 +202,8 @@ warmup_provider() {
             local expanded_model="${model/#\~/$HOME}"
             echo "   启动 mlx-lm server on port $port..."
             python3 -m mlx_lm.server --model "$expanded_model" --port "$port" \
-                --chat-template-args '{"enable_thinking":false}' &>/tmp/mlx-lm-server.log &
+                --chat-template-args '{"enable_thinking":false}' \
+                --prompt-cache-size 0 &>/tmp/mlx-lm-server.log &
             MLX_LM_PID=$!
             for i in $(seq 1 60); do
                 curl -s --noproxy '*' "$base_url/models" &>/dev/null && break
@@ -249,10 +250,9 @@ stop_provider() {
     fi
 }
 
-# ---- 轮间清理（消除 KV cache 对下一轮的影响）----
+# ---- 轮间清理（消除 KV cache / prompt cache 对下一轮的影响）----
 # 参数: provider_name, model, api_key, base_url, managed
-# 卸载模型 → 等内存释放 → 重新预热
-# mlx-lm 无跨请求缓存，跳过
+# 所有平台都做清理: 卸载/重启 → 等内存释放 → 重新预热
 inter_round_cleanup() {
     local provider_name="$1"
     local model="$2"
@@ -266,12 +266,10 @@ inter_round_cleanup() {
             ;;
         omlx)
             local omlx_base="${base_url%/v1}"
-            # 重新 login 确保 cookie 有效
             curl -s --noproxy '*' -c /tmp/omlx-bench-cookies.txt \
                 "$omlx_base/admin/api/login" \
                 -X POST -H "Content-Type: application/json" \
                 -d "{\"api_key\": \"$api_key\"}" > /dev/null 2>&1 || true
-            # 查实际 loaded model ID 再 unload
             for loaded_id in $(curl -s --noproxy '*' -H "Authorization: Bearer $api_key" \
                 "$omlx_base/v1/models" 2>/dev/null | python3 -c "
 import sys,json
@@ -285,8 +283,8 @@ except: pass
             done
             ;;
         mlx-lm)
-            # 无跨请求缓存，跳过
-            return 0
+            # mlx-lm 有 prompt cache（--prompt-cache-size 默认非零），重启 server 清除
+            stop_provider "$provider_name"
             ;;
     esac
 

@@ -1,6 +1,0 @@
-{
-  "timestamp": "2026-04-05T16:30:30Z",
-  "provider": "ollama",
-  "model": "qwen3.5:35b-a3b-nvfp4",
-  "free_memory_mb": 4018
-}
