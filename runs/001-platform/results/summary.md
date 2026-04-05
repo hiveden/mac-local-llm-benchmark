@@ -43,11 +43,11 @@
 
 ## B1-multi-turn — 多轮缓存分析
 
-| Provider | Turn | Rounds | TTFT (median) | TTFT stdev | tok/s (median) | Cache Speedup |
-|----------|------|--------|--------------|-----------|---------------|--------------|
+| Provider | Turn | Rounds | TTFT (median) | TTFT stdev | tok/s (median) | T2/T1 Ratio |
+|----------|------|--------|--------------|-----------|---------------|------------|
 | mlx-lm | T1 | 9 | 205ms | 8.63 | N/A | — |
-| mlx-lm | T2 | 9 | 407ms | 1.58 | N/A | 0.5x |
+| mlx-lm | T2 | 9 | 407ms | 1.58 | N/A | 1.99 |
 | ollama | T1 | 9 | 133ms | 3.91 | 66.29 | — |
-| ollama | T2 | 9 | 356ms | 6.19 | 66.3 | 0.37x |
+| ollama | T2 | 9 | 356ms | 6.19 | 66.3 | 2.68 |
 | omlx | T1 | 9 | 89ms | 3.61 | N/A | — |
-| omlx | T2 | 9 | 304ms | 17.6 | N/A | 0.29x |
+| omlx | T2 | 9 | 304ms | 17.6 | N/A | 3.42 |

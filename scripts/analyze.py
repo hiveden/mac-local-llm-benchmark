@@ -119,7 +119,7 @@ def analyze(records):
         }
         results.append(result)
 
-    # ---- B1 多轮分析: 按 (test, provider, turn) 分组，计算缓存加速比 ----
+    # ---- B1 多轮分析: 按 (test, provider, turn) 分组，计算 T2/T1 ratio ----
     multi_turn_results = []
     mt_records = [r for r in valid if "turn" in r]
     if mt_records:
@@ -152,13 +152,13 @@ def analyze(records):
             multi_turn_results.append(entry)
             provider_turns.setdefault((test, provider), {})[turn] = ttft_median
 
-        # 回填 cache_speedup_ratio (TTFT₁ / TTFT₂)
+        # 回填 t2_t1_ratio (TTFT₂ / TTFT₁, >1 表示 T2 更慢)
         for entry in multi_turn_results:
             turns = provider_turns.get((entry["test"], entry["provider"]), {})
             if entry["turn"] == 2 and turns.get(1) and turns.get(2):
-                entry["cache_speedup"] = round(turns[1] / turns[2], 2) if turns[2] > 0 else None
+                entry["t2_t1_ratio"] = round(turns[2] / turns[1], 2) if turns[1] > 0 else None
             else:
-                entry["cache_speedup"] = None
+                entry["t2_t1_ratio"] = None
 
     return results, multi_turn_results, has_estimated_tokens
 
@@ -203,11 +203,11 @@ def generate_summary(results, run_dir, has_estimated_tokens=False, multi_turn_re
 
         for test, group in mt_tests.items():
             lines.append(f"\n## {test} — 多轮缓存分析\n")
-            lines.append("| Provider | Turn | Rounds | TTFT (median) | TTFT stdev | tok/s (median) | Cache Speedup |")
-            lines.append("|----------|------|--------|--------------|-----------|---------------|--------------|")
+            lines.append("| Provider | Turn | Rounds | TTFT (median) | TTFT stdev | tok/s (median) | T2/T1 Ratio |")
+            lines.append("|----------|------|--------|--------------|-----------|---------------|------------|")
 
             for r in sorted(group, key=lambda x: (x["provider"], x["turn"])):
-                speedup = f"{r['cache_speedup']}x" if r.get("cache_speedup") else "—"
+                speedup = f"{r['t2_t1_ratio']}" if r.get("t2_t1_ratio") else "—"
                 tok_s = r['decode_tok_s_median'] if r['decode_tok_s_median'] is not None else "N/A"
                 lines.append(
                     f"| {r['provider']} | T{r['turn']} | {r['rounds']} | "
@@ -245,7 +245,7 @@ def generate_csv(results, run_dir, multi_turn_results=None):
         mt_csv_path = results_dir / "multi_turn.csv"
         mt_headers = ["test", "provider", "turn", "rounds",
                       "ttft_ms_median", "ttft_ms_stdev",
-                      "decode_tok_s_median", "cache_speedup"]
+                      "decode_tok_s_median", "t2_t1_ratio"]
         with open(mt_csv_path, "w") as f:
             f.write(",".join(mt_headers) + "\n")
             for r in multi_turn_results:

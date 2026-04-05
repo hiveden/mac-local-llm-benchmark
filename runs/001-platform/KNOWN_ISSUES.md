@@ -74,9 +74,9 @@
 
 #### DA-8. A3 mlx-lm TTFT 有 7% 系统性漂移
 
-**现象**: A3 场景 mlx-lm TTFT 从 R02 1533ms 单调递增到 R08 1642ms（+110ms, +7%）。Ollama/oMLX 同场景完全平坦（range <15ms）。
+**现象**: A3 场景 mlx-lm TTFT 从 R02 开始上升，但在 R06-R07 后趋稳。完整序列: 1533→1554→1579→1604→1619→1631→1642→1638→1636ms（前6轮上升7%，后2轮趋稳）。Ollama/oMLX 同场景完全平坦（range <15ms）。
 
-**可能原因**: mlx-lm 内部 MLX 框架状态累积（内存分配器碎片化、Metal shader cache 等）。不是热节流（否则 Ollama/oMLX 也会受影响）。
+**可能原因**: mlx-lm 内部 MLX 框架状态累积（内存分配器碎片化、Metal shader cache 等），约 6-7 轮后达到稳态。不是热节流（否则 Ollama/oMLX 也会受影响）。
 
 **影响**: 有限。stdev 39.91ms 在 1619ms 基数上只是 2.5%，median 不受显著影响。标注但不影响结论。
 
@@ -146,8 +146,8 @@
 2. **A3 TTFT（长 prompt）**: oMLX 1317ms < Ollama 1455ms < mlx-lm 1619ms — 同趋势
 3. **总耗时**: mlx-lm 最快（A1: 1293ms, A2: 11710ms, A3: 3025ms），decode 速度最快
 4. **prefill 差值（A3-A1）一致**: Ollama 1322ms, oMLX 1230ms, mlx-lm 1415ms — MLX 引擎 prefill 速度本身无显著差异
-5. **Gemma4 跨引擎（E1/E2）**: oMLX (MLX) vs Ollama (llama.cpp) — E1 总耗时 oMLX 1706ms vs Ollama 2512ms; E2 总耗时 oMLX 3740ms vs Ollama 7659ms — MLX 引擎快 1.5-2x
-6. **B1 多轮**: 禁用 cache 后三平台均无 intra-turn 加速，Turn2 TTFT > Turn1（更长 context），行为一致
+5. **Gemma4 跨引擎（E1/E2）**: oMLX (MLX) vs Ollama (llama.cpp) — E2 长 prompt prefill: oMLX TTFT 408ms vs Ollama 2655ms（oMLX 快 6.5x，这是 MLX vs llama.cpp 的核心 prefill 差距）；E2 总耗时: oMLX 3740ms vs Ollama 7659ms（2.0x，decode 阶段稀释了 prefill 优势）；E1 总耗时 oMLX 1706ms vs Ollama 2512ms（1.5x）
+6. **B1 多轮**: 禁用 cache 后三平台均无 intra-turn 加速，Turn2 TTFT > Turn1（更长 context），行为一致。三平台 T2/T1 ratio 均 >1（T2 更慢），说明在 --prompt-cache-size 0 条件下没有 prefix 复用加速。ratio 反映的是 context 增长对 prefill 的影响。
 7. **tok/s**: 仅 Ollama 可信（~66 tok/s Qwen3.5, ~47 tok/s Gemma4），oMLX/mlx-lm 待 T 场景补充
 
 ## 不可信结论（需要补充数据）
