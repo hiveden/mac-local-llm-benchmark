@@ -31,7 +31,7 @@
 
 - A1→A3 prefill 增量：Ollama 1322ms、oMLX 1230ms、mlx-lm 1415ms（差距 <15%）
 - Qwen3.5 场景下 Ollama 走 MLX 引擎（0.19+ nvfp4），三个平台底层引擎相同
-- 绝对 TTFT 的差异可能来自各 backend 实现层的差异（API 封装、请求解析、模型初始化等），具体原因未进一步分析：
+- 三个 backend 的纯 prefill 增量差距 <15%，但 A1 TTFT 差距达 2.3x（87ms vs 204ms）。这个差距的具体来源未进一步分析：
 
 | Provider | A1 TTFT | A3-A1（≈纯 prefill 增量） |
 |----------|---------|-------------------------|
@@ -39,7 +39,7 @@
 | Ollama | 133ms | 1322ms |
 | mlx-lm | 204ms | 1415ms |
 
-- A1 TTFT 差 2.3x（87 vs 204ms），纯 prefill 增量差 <15%——绝对 TTFT 排名主要由短 prompt 下的固定差异决定
+- A1 TTFT 差 2.3x（87 vs 204ms），纯 prefill 增量差 <15%
 - 注意：这和结论 3 不矛盾——结论 3 是 Gemma4 上 MLX vs llama.cpp（不同引擎），本条是 Qwen3.5 上三个 MLX backend（同引擎）
 
 ### 5. 缓存是 benchmark 最大陷阱
@@ -88,7 +88,7 @@
 
 ## 选型建议（2026 年 4 月快照）
 
-### Mac 本地想要稳定的生产力：Ollama
+### Mac 本地日常稳定使用：Ollama
 
 - 生态最全，一键安装，社区最大
 - Qwen3.5 已有 MLX 加速（nvfp4），性能和 oMLX 差距 <10%
@@ -116,7 +116,7 @@
 
 ### 一句话
 
-**稳定生产用 Ollama，想折腾用 oMLX，做测评三个都装。**
+**日常稳定用 Ollama，想折腾用 oMLX，做测评三个都装。**
 
 ## 这次测评本身的教训
 
