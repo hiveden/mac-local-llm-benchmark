@@ -1,6 +1,6 @@
 test,provider,turn,rounds,ttft_ms_median,ttft_ms_stdev,decode_tok_s_median,cache_speedup
-B1-multi-turn,mlx-lm,1,9,1662,49.13,,
-B1-multi-turn,mlx-lm,2,9,420,7.3,,3.96
+B1-multi-turn,mlx-lm,1,9,205,8.63,,
+B1-multi-turn,mlx-lm,2,9,407,1.58,,0.5
 B1-multi-turn,ollama,1,9,133,3.91,66.29,
 B1-multi-turn,ollama,2,9,356,6.19,66.3,0.37
 B1-multi-turn,omlx,1,9,89,3.61,,

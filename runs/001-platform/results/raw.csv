@@ -1,11 +1,11 @@
 test,provider,prompt,rounds,ttft_ms_median,ttft_ms_stdev,decode_tok_s_median,decode_tok_s_mean,decode_tok_s_stdev,total_ms_median,tokens_median,memory_peak_mb
-A1-single-short,mlx-lm,,9,1573,21.56,,,,2688,,19239
+A1-single-short,mlx-lm,,9,204,1.5,,,,1293,,19297
 A1-single-short,ollama,,9,133,1.9,66.09,66.04,0.29,1662,101,21504
 A1-single-short,omlx,,9,87,2.88,,,,1795,,21697
-A2-single-code,mlx-lm,,9,1624,10.39,,,,12941,,19236
+A2-single-code,mlx-lm,,9,266,6.8,,,,11710,,19237
 A2-single-code,ollama,,9,199,4.77,66.1,66.1,0.27,15699,1024,21504
 A2-single-code,omlx,,9,140,0.71,,,,16109,,21157
-A3-single-long,mlx-lm,,9,2806,30.21,,,,4199,,19240
+A3-single-long,mlx-lm,,9,1619,39.91,,,,3025,,19295
 A3-single-long,ollama,,9,1455,6.26,65.46,65.41,0.3,3282,119,21504
 A3-single-long,omlx,,9,1317,2.45,,,,3078,,21155
 E1-gemma4-cross,ollama,,9,316,18.37,46.66,46.72,0.65,2512,102,23552

@@ -1,0 +1,21 @@
+{
+  "provider": "mlx-lm",
+  "model": "~/.omlx/models/Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 103,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 1687,
+  "ttft_ms": 406,
+  "decode_tok_s": 80.4,
+  "response": "1. **企业智能客服**：系统自动检索内部产品手册和故障案例库，为客服机器人提供最新、准确的回答依据，解决传统模型知识滞后导致的幻觉问题。\n2. **合规与法律审查**：在生成合同条款或法律意见书时，实时检索最新的法律法规和公司内部合规政策，确保输出内容严格符合监管要求。\n3. **企业知识问答助手**：员工提问时，系统从分散的文档、代码库和会议记录中精准提取相关信息，生成基于事实的总结报告，打破数据孤岛。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 19256,
+  "memory_after_mb": 19256,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "none"
+  }
+}

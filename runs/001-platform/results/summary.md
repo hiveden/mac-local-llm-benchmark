@@ -7,7 +7,7 @@
 
 | Provider | Prompt | Rounds | TTFT (median) | tok/s (median) | tok/s (stdev) | 总耗时 (median) | 峰值内存 |
 |----------|--------|--------|--------------|---------------|--------------|----------------|---------|
-| mlx-lm |  | 9 | 1573ms | N/A | N/A | 2688ms | 19239MB |
+| mlx-lm |  | 9 | 204ms | N/A | N/A | 1293ms | 19297MB |
 | ollama |  | 9 | 133ms | 66.09 | 0.29 | 1662ms | 21504MB |
 | omlx |  | 9 | 87ms | N/A | N/A | 1795ms | 21697MB |
 
@@ -15,7 +15,7 @@
 
 | Provider | Prompt | Rounds | TTFT (median) | tok/s (median) | tok/s (stdev) | 总耗时 (median) | 峰值内存 |
 |----------|--------|--------|--------------|---------------|--------------|----------------|---------|
-| mlx-lm |  | 9 | 1624ms | N/A | N/A | 12941ms | 19236MB |
+| mlx-lm |  | 9 | 266ms | N/A | N/A | 11710ms | 19237MB |
 | ollama |  | 9 | 199ms | 66.1 | 0.27 | 15699ms | 21504MB |
 | omlx |  | 9 | 140ms | N/A | N/A | 16109ms | 21157MB |
 
@@ -23,7 +23,7 @@
 
 | Provider | Prompt | Rounds | TTFT (median) | tok/s (median) | tok/s (stdev) | 总耗时 (median) | 峰值内存 |
 |----------|--------|--------|--------------|---------------|--------------|----------------|---------|
-| mlx-lm |  | 9 | 2806ms | N/A | N/A | 4199ms | 19240MB |
+| mlx-lm |  | 9 | 1619ms | N/A | N/A | 3025ms | 19295MB |
 | ollama |  | 9 | 1455ms | 65.46 | 0.3 | 3282ms | 21504MB |
 | omlx |  | 9 | 1317ms | N/A | N/A | 3078ms | 21155MB |
 
@@ -45,8 +45,8 @@
 
 | Provider | Turn | Rounds | TTFT (median) | TTFT stdev | tok/s (median) | Cache Speedup |
 |----------|------|--------|--------------|-----------|---------------|--------------|
-| mlx-lm | T1 | 9 | 1662ms | 49.13 | N/A | — |
-| mlx-lm | T2 | 9 | 420ms | 7.3 | N/A | 3.96x |
+| mlx-lm | T1 | 9 | 205ms | 8.63 | N/A | — |
+| mlx-lm | T2 | 9 | 407ms | 1.58 | N/A | 0.5x |
 | ollama | T1 | 9 | 133ms | 3.91 | 66.29 | — |
 | ollama | T2 | 9 | 356ms | 6.19 | 66.3 | 0.37x |
 | omlx | T1 | 9 | 89ms | 3.61 | N/A | — |
