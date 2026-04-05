@@ -283,8 +283,9 @@ except: pass
             done
             ;;
         mlx-lm)
-            # mlx-lm 有 prompt cache（--prompt-cache-size 默认非零），重启 server 清除
-            stop_provider "$provider_name"
+            # --prompt-cache-size 0 已禁用 prompt cache，无需重启 server
+            # 重启会引入 ~1.4s JIT 编译开销，导致 TTFT 虚高不可跨平台比较
+            return 0
             ;;
     esac
 
