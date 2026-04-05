@@ -72,6 +72,14 @@
 
 **结论**: 禁用 prompt cache 后，**三平台均无 intra-turn cache 加速**，Turn2 TTFT 均高于 Turn1（更长 context → 更长 prefill），行为一致。第三轮观察到的 mlx-lm 3.96x 加速是因为当时还未禁用 prompt cache。
 
+#### DA-8. A3 mlx-lm TTFT 有 7% 系统性漂移
+
+**现象**: A3 场景 mlx-lm TTFT 从 R02 1533ms 单调递增到 R08 1642ms（+110ms, +7%）。Ollama/oMLX 同场景完全平坦（range <15ms）。
+
+**可能原因**: mlx-lm 内部 MLX 框架状态累积（内存分配器碎片化、Metal shader cache 等）。不是热节流（否则 Ollama/oMLX 也会受影响）。
+
+**影响**: 有限。stdev 39.91ms 在 1619ms 基数上只是 2.5%，median 不受显著影响。标注但不影响结论。
+
 #### DA-5. A2 mlx-lm 所有轮次 response 完全相同
 
 **现象**: 9 轮输出一字不差。
