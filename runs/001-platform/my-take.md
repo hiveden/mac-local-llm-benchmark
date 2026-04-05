@@ -1,6 +1,6 @@
 # My Take — RUN 01 个人观点
 
-> 基于 RUN 01 数据的个人判断，带有主观性。
+> 基于 RUN 01 数据的个人判断，带有主观性。适用范围：M4 Pro 64GB + 以下模型 + 2026 年 4 月。
 > 数据见 results/summary.md，审计见 KNOWN_ISSUES.md。
 
 ## 六条结论
@@ -17,6 +17,7 @@
 - A2 代码生成：mlx-lm 11710ms < Ollama 15699ms < oMLX 16109ms
 - A3 长文本总结：mlx-lm 3025ms < oMLX 3078ms < Ollama 3282ms
 - 但生成 token 数未精确测量（oMLX/mlx-lm 流式不返回 completion_tokens），无法区分是 decode 更快还是输出更短
+- T1 非流式补充数据（A1 prompt）：mlx-lm 78 tok/s > ollama 63 tok/s > omlx 60 tok/s，仅限该场景
 
 ### 3. Gemma4 跨引擎：MLX vs llama.cpp 差距显著（长 prompt 场景）
 
@@ -24,6 +25,7 @@
 - E2 总耗时：oMLX 3740ms vs Ollama 7659ms，**2.0x**（decode 阶段稀释了 prefill 优势）
 - E1 短 prompt 总耗时：oMLX 1706ms vs Ollama 2512ms，1.5x
 - RAG / 长文档等长输入场景，MLX 后端收益明确
+- **注意时效性**：此结论基于 Ollama 0.20.2 对 Gemma4 走 llama.cpp 的现状。Gemma4 MLX 支持 [已在开发中](https://github.com/ollama/ollama/pull/15244)，未来 Ollama 加上后这个差距会消失
 
 ### 4. Qwen3.5 三个 backend 的 prefill 吞吐接近
 
@@ -35,40 +37,74 @@
 ### 5. 缓存是 benchmark 最大陷阱
 
 - Ollama 的 KV cache 命中让 A3 TTFT 显示为真实值的 1/25（58ms vs 1455ms）
-- mlx-lm 的 prompt cache 让 A1 TTFT 显示为真实值的 1/9（172ms vs 1573ms）
+- mlx-lm 的 prompt cache 命中让 A1 TTFT 显示为真实值的 1/9（172ms vs 1573ms）
 - 这不是平台的 bug——KV cache 和 prompt cache 都是合理的性能优化设计
 - 但如果 benchmark 不清缓存，跑出来的 TTFT 数据完全不反映真实 prefill 性能
 - 我们跑了 4 轮才拿到干净数据，每轮发现一个新的缓存问题
 
-### 6. tok/s 在流式模式下只有 Ollama 可信
+### 6. tok/s：T1 非流式数据补充
 
-- oMLX/mlx-lm 的 SSE 流式响应不返回 completion_tokens
-- 代码 fallback 到字符数估算（len//2），实测偏差可达 50%
-- Ollama tok/s：~66 tok/s (Qwen3.5 35B)，~47 tok/s (Gemma4 26B)
-- oMLX/mlx-lm 的 tok/s 需要非流式场景（T1）独立补充
+- oMLX/mlx-lm 流式不返回 completion_tokens，流式 tok/s 不可信
+- T1 非流式精确数据（A1 短 prompt）：
+
+| Provider | Tokens (median) | 非流式总耗时 | tok/s |
+|----------|----------------|-------------|-------|
+| mlx-lm | 100 | 1277ms | **78.1** |
+| ollama | 100 | 1602ms | **62.5** |
+| omlx | 118 | 1959ms | **60.2** |
+
+- 仅限 A1 prompt，A2/A3 未精确测量
 
 ## 未解之谜
 
 **为什么 Gemma4 上 MLX vs llama.cpp 差 6.5x，而 Qwen3.5 上三个 MLX backend 差距 <15%？**
 
-可能的解释：
-- Ollama 对 Qwen3.5 走 MLX（nvfp4），对 Gemma4 走 llama.cpp——不是同一个引擎
-- llama.cpp 对 Gemma4 的 MoE 架构可能有特定瓶颈
-- 也可能是量化方式差异（Q4_K_M vs group-4bit）
+原因已明确：Ollama 对 Qwen3.5 走 MLX（有 nvfp4 量化版），对 Gemma4 走 llama.cpp（无 MLX 支持）。不是同一个引擎之间的对比。
 
-这个不一致性值得在下一期深入。
+延伸问题：Ollama 的 MLX 加速是按架构逐个适配的，截至 2026.04 只有 Qwen3.5 系列提供了 [8 个 nvfp4 版本](https://ollama.com/library/qwen3.5/tags)。Gemma4 MLX 支持 [正在开发](https://github.com/ollama/ollama/pull/15244)（Draft PR #15244），但尚未合并。
 
-## 选型建议
+## 两个平台的发展阶段不同
 
-| 用户画像 | 推荐 | 理由 |
-|---------|------|------|
-| 日常使用不想折腾 | **Ollama** | 生态最全，一键安装，TTFT 够快 |
-| 追求最低 TTFT | **oMLX** | 所有场景 TTFT 最快，但需要手动管理模型 |
-| 追求最短总耗时 | **mlx-lm** | decode 最快，但需要手动启停 server |
-| Gemma4 等非 Qwen 模型 | **oMLX** | Ollama 走 llama.cpp 慢 2-6.5x |
-| 做 benchmark | **三个都装** | 不同平台测的是不同东西，需要对比视角 |
+对比 oMLX 和 Ollama 最近的版本日志：
 
-一句话：**90% 的 Mac 用户用 Ollama 就够了。追求极致再看 oMLX/mlx-lm。**
+**oMLX**（0.2.x → 0.3.x）：密集修复 crash、内存泄漏、Metal buffer 竞争条件、内核 panic 等稳定性问题。上期测评 oMLX 跑 27B 会卡死，0.2.23-0.2.24 修了一系列内存管理 crash。本次测试 0.3.2 跑 Qwen3.5 35B + Gemma4 26B 共 70 次请求零故障，但长时间运行稳定性未验证。
+
+**Ollama**（0.19 → 0.20.x）：引入 MLX 引擎、新增 Gemma4 模型支持、优化 flash attention、改进 KV cache。处于功能扩展和性能优化阶段。
+
+这说明 **oMLX 还在打磨稳定性，Ollama 已经在做功能迭代**。
+
+## 选型建议（2026 年 4 月快照）
+
+### Mac 本地想要稳定的生产力：Ollama
+
+- 生态最全，一键安装，社区最大
+- Qwen3.5 已有 MLX 加速（nvfp4），性能和 oMLX 差距 <10%
+- KV cache / 模型管理等开箱即用
+- 对 90% 的日常使用场景够用
+
+### 想要更多选择和更快的新模型支持：oMLX
+
+- 原生 MLX，对所有 MLX 格式模型即装即用
+- 不需要等 Ollama 出 nvfp4 量化版
+- Gemma4 等新模型可以第一时间体验
+- 代价：稳定性仍在打磨，需要手动管理模型
+- 适合愿意折腾、追求最新的用户
+
+### 想要 Gemma4 等非 Qwen 模型的 MLX 加速：oMLX（当前唯一选择）
+
+- Ollama 对 Gemma4 走 llama.cpp，慢 2-6.5x
+- **此结论有时效性**：Ollama Gemma4 MLX 支持正在开发，合并后差距会消失
+- 如果只用 Qwen3.5，选 Ollama 和 oMLX 差别不大
+
+### 做 benchmark / 追求裸跑基线：mlx-lm
+
+- Apple 官方 MLX 推理，零封装开销
+- T1 数据显示 decode 最快（78 tok/s vs Ollama 63）
+- 代价：手动启停 server，一次只能加载一个模型，无模型管理
+
+### 一句话
+
+**稳定生产用 Ollama，想折腾用 oMLX，做测评三个都装。**
 
 ## 这次测评本身的教训
 
