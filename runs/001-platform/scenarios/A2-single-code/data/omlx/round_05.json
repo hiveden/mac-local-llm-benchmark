@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1690,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16098,
+  "ttft_ms": 141,
+  "decode_tok_s": 105.91,
+  "response": "这是一个使用 Python 实现的 RAG（检索增强生成）最小可行产品（MVP）。\n\n为了保持代码简洁且无需复杂的部署配置，我们将使用：\n1.  **LangChain (LangChain Core)**: 处理文档切分、检索和向量存储（使用内存中的 `SimpleVectorStore`，无需安装数据库）。\n2.  **HuggingFace Transformers**: 本地运行开源嵌入模型（`sentence-transformers/all-MiniLM-L6-v2`）和生成模型（`facebook/bart-base`），无需 API Key。\n\n### 前置准备\n\n你需要安装以下库：\n\n```bash\npip install langchain langchain-community sentence-transformers torch\n```\n\n### 完整代码实现\n\n```python\nimport re\nfrom typing import List, Optional, Dict\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\nfrom langchain.schema import Document\nfrom langchain_community.vectorstores import SimpleVectorStore\nfrom langchain_community.embeddings.huggingface import HuggingFaceEmbeddings\nfrom langchain.chains import create_retrieval_chain\nfrom langchain.chains.combine_documents import create_stuff_documents_chain\nfrom langchain_core.prompts import ChatPromptTemplate\n\n# 1. 定义配置：模型选择\n# 为了最小化依赖，我们使用本地模型（无需 API Key）\n# embeddings_model: 用于将文本转换为向量\n# llm_model: 用于生成回答\nEMBEDDING_MODEL = \"sentence-transformers/all-MiniLM-L6-v2\"\nGENERATION_MODEL = \"facebook/bart-base\"  # BART 是一个轻量级的生成模型\n\ndef get_embedding_model():\n    return HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)\n\ndef get_llm():\n    # 注意：在真实生产环境中，通常使用 LangChain 的 LLM 接口适配器\n    # 这里为了演示最小化，我们手动构建一个简单的生成逻辑，\n    # 或者使用 LangChain 的 SimpleLLM 接口。\n    # 为了保持代码最简且可运行，这里演示逻辑：\n    # 实际项目中建议使用 ChatModel (如 LlamaIndex 或 HuggingFaceHub)\n    # 由于 setup 一个本地 LLM 比较繁琐，这里我们模拟 \"Retrieval\" 和 \"Generation\" 的分离逻辑。\n    return HuggingFacePipeline.from_model_id(\n        model_id=GENERATION_MODEL,\n        task=\"text2text-generation\",\n        pipeline_kwargs={\"max_new_tokens\": 200, \"do_sample\": False}\n    )\n\n# 为了简化演示，如果不方便安装 Transformers Pipeline 环境，\n# 我们可以使用一个最简单的\"Mock\"生成函数来展示流程，\n# 但下面的代码尝试实现真实的本地 RAG 流程。\n\nimport torch\nfrom transformers import AutoModelForSeq2SeqLM, AutoTokenizer\n\ndef create_local_llm(model_id: str):\n    from langchain_community.llms import HuggingFacePipeline\n    from langchain_community.utils import convert_to_openai_format # 不需要这个\n    \n    tokenizer = AutoTokenizer.from_pretrained(model_id)\n    model = AutoModelForSeq2SeqLM.from_pretrained(model_id)\n    \n    # 简单的 Pipeline 封装\n    class SimpleLocalLLM:\n        def __call__(self, prompt: str) -> str:\n            # 这里直接调用模型，略过 LangChain 复杂的 LLM 链，\n            # 为了演示核心逻辑，我们手动实现一个简单的生成器\n            inputs = tokenizer(prompt, return_tensors=\"pt\")\n            outputs = model.generate(**inputs, max_length=200, early_stopping=True)\n            return tokenizer.decode(outputs[0], skip_special_tokens=True)\n            \n    return SimpleLocalLLM()\n\n# 2. 核心 RAG 实现类\nclass MinimalRAG:\n    def __init__(self, documents: List[str]):\n        self.documents = documents\n        self.embeddings = get_embedding_model()\n        self.llm = create_local_llm(GENERATION_MODEL)\n        \n        # --- 步骤 1: 文档切分 (Chunking) ---\n        text_splitter = RecursiveCharacterTextSplitter(\n            chunk_size=300,\n            chunk_overlap=50,\n            separators=[\"\\n\\n\", \"\\n\", \" \", \".\"]\n        )\n        \n        # 创建文档对象\n        docs = []\n        for text in documents:\n            doc = text_splitter.create_documents([text])\n            docs.extend(doc)\n            \n        # --- 步骤 2: 生成 Embedding 并存储到向量库 (Ingestion) ---\n        # 使用 SimpleVectorStore (内存版，无需安装 PostgreSQL/Milvus 等)\n        self.vector_store = SimpleVectorStore.from_documents",
+  "reasoning": null,
+  "memory_before_mb": 21156,
+  "memory_after_mb": 21156,
+  "is_warmup": false,
+  "round": 5,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 33.0,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

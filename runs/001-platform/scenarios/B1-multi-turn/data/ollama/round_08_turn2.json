@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 160,
+  "tokens_generated": 116,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 2106,
+  "ttft_ms": 356,
+  "decode_tok_s": 66.3,
+  "response": "1. **智能客服问答**：系统自动检索企业内部最新的产品手册和故障排查指南，为客服人员或终端用户生成基于事实的精准解决方案，避免大模型编造信息。  \n2. **企业知识聚合分析**：将分散在文档、邮件及会议记录中的非结构化数据向量化，让员工能通过自然语言提问快速提取跨部门的综合情报与趋势洞察。  \n3. **合规与风险审查**：实时比对业务操作文本与最新的法律法规库及内部制度条款，自动识别并提示潜在的合规漏洞或违规风险。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 8,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

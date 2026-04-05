@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1511,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16109,
+  "ttft_ms": 140,
+  "decode_tok_s": 94.62,
+  "response": "这是一个基于 Python 的 RAG（检索增强生成）最小实现。为了保持代码的“最小化”和“可运行性”，我们将使用以下轻量级库：\n\n1.  **`chromadb`**: 用于创建本地向量数据库（替代传统的繁重的向量库）。\n2.  **`sentence-transformers`**: 用于生成文本嵌入（Embedding），支持离线运行且效果良好。\n3.  **`transformers` + `text-generation-inference` (或直接模拟)**: 这里为了演示完整性，我们将模拟“生成”步骤（调用一个简单的随机回复或固定模板），因为真正的生成模型（如 Llama3, Qwen）通常需要大量显存。如果你本地有 HuggingFace Token，可以替换为真实调用。\n\n### 前置准备\n\n你需要安装以下库：\n\n```bash\npip install chromadb sentence-transformers torch\n```\n\n### 完整代码实现\n\n```python\nimport os\nimport chromadb\nfrom sentence_transformers import SentenceTransformer\nfrom typing import List, Dict\n\n# ========================\n# 1. 配置初始化\n# ========================\n# 初始化客户端\nclient = chromadb.PersistentClient(path=\"./db_rag_min\")\n\n# 初始化 Embedding 模型 (第一次运行会下载模型)\n# 使用 'all-MiniLM-L6-v2' 是小且快速的经典模型\nmodel_name = \"all-MiniLM-L6-v2\"\nembedder = SentenceTransformer(model_name)\n\n# 创建一个集合用于存储文档\ncollection_name = \"doc_collection\"\ntry:\n    collection = client.get_or_create_collection(name=collection_name)\nexcept Exception:\n    collection = client.get_collection(name=collection_name)\n\n# ========================\n# 2. 文档切分 (Text Splitting)\n# ========================\ndef split_documents(text: str, chunk_size: int = 200, overlap: int = 50) -> List[str]:\n    \"\"\"\n    简单的字符级切分，模拟文档处理\n    :param text: 原始文本\n    :param chunk_size: 每个 chunk 的最大长度\n    :param overlap: 重叠长度，用于保持上下文连贯\n    :return: 切分后的文本列表\n    \"\"\"\n    chunks = []\n    start = 0\n    text_len = len(text)\n    \n    while start < text_len:\n        end = min(start + chunk_size, text_len)\n        chunk = text[start:end]\n        \n        # 如果结束点不是句末，尝试回退到最后一个句号（简单逻辑）\n        if end < text_len:\n            last_period = chunk.rfind('.')\n            if last_period > chunk_size * 0.5: # 只回退一半以上的长度\n                chunk = chunk[:last_period + 1]\n                end = start + len(chunk)\n        \n        if chunk:\n            chunks.append(chunk)\n        \n        # 移动下一个窗口：前进 chunk_size - overlap 步长\n        start = end - overlap\n        if start < 0:\n            start = 0\n            \n    return chunks\n\n# 准备一些示例文档\nraw_docs = [\n    \"\"\"Python 是一种解释型、面向对象、动态数据类型的高级程序设计语言。Python 由 Guido van Rossum 于 1989 年发明，第一个公开发行版发行于 1991 年。Python 语法简洁清晰，特色之一在于强制缩进。它常被用于数据分析、人工智能、网络开发等领域。\"\"\",\n    \"\"\"向量数据库（Vector Database）是一种专门用于存储和检索高维向量（Embedding）的数据库。在 RAG 系统中，向量数据库用于将文本转化为数值向量，以便通过语义相似度进行快速检索。常见的向量数据库包括 ChromaDB, Milvus, Pinecone 等。\"\"\"\n]\n\n# ========================\n# 3. 构建索引 (Embedding + 存储)\n# ========================\ndef build_index(chunks: List[str]):\n    \"\"\"\n    将切分后的文本转化为向量并存储到 ChromaDB\n    \"\"\"\n    for i, chunk in enumerate(chunks):\n        # 生成 Embedding\n        vector = embedder.encode(chunk, convert_to_numpy=True)\n        \n        # 添加到 ChromaDB\n        # IDs 必须唯一，这里使用 chunk 的哈希或索引\n        chunk_id = f\"chunk_{i}\"\n        collection.add(\n            ids=[chunk_id],\n            embeddings=[vector.tolist()], # Chroma 需要 list\n            metadatas=[{\"source\": chunk}], # 可选：存储原文以便生成时引用\n            documents=[chunk] # Chroma 可选：存储原始文本\n        )\n        print(f\"  [索引] 处理 Chunk {i}: {chunk[:50]}...\")",
+  "reasoning": null,
+  "memory_before_mb": 21156,
+  "memory_after_mb": 21156,
+  "is_warmup": false,
+  "round": 6,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 33.0,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

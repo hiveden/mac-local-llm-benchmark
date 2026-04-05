@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15824,
+  "ttft_ms": 199,
+  "decode_tok_s": 65.54,
+  "response": "这是一个基于 `LangChain` (用于处理流程) 和 `faiss` / `chromadb` (用于向量存储) 以及 `sentence-transformers` (用于本地 Embedding) 的最小实现示例。\n\n这个实现不依赖任何云平台（如 OpenAI 或 Azure），完全在本地运行，演示了 RAG 的四个核心步骤：**文档切分 (Slicing)** -> **Embedding** -> **检索 (Retrieval)** -> **生成 (Generation)**。\n\n### 前置准备\n\n你需要安装以下库：\n\n```bash\npip install langchain sentence-transformers faiss-cpu\n# 如果使用 OpenAI 或其他大模型，还需要: pip install openai\n# 为了演示本地模型生成，这里我们使用 Mock 或简单的字符串拼接来模拟“生成”步骤，\n# 但代码中保留了对大模型的调用接口。\n```\n\n> **注意**: `sentence-transformers` 第一次运行时会自动下载模型文件（约几百 MB），请确保网络通畅。\n\n### 最小实现代码 (`rag_minimal.py`)\n\n```python\nimport os\nfrom typing import List, Any\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\nfrom langchain.embeddings import SentenceTransformerEmbeddings\nfrom langchain.vectorstores import FAISS\nfrom langchain.llm.base import LLM\nfrom langchain.chains import RetrievalQA\nfrom langchain.prompts import PromptTemplate\nimport torch\n\n# 设置设备\nDEVICE = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n\nclass SimpleVectorRAG:\n    def __init__(self, embedding_model_name=\"all-MiniLM-L6-v2\"):\n        \"\"\"\n        初始化 RAG 系统。\n        这里使用本地 SentenceTransformer 模型进行 Embedding，\n        FAISS 作为向量数据库。\n        \"\"\"\n        print(f\"正在加载嵌入模型: {embedding_model_name} (设备: {DEVICE})\")\n        \n        # 1. Embedder 定义 (Embedding Step)\n        self.embeddings = SentenceTransformerEmbeddings(model_name=embedding_model_name, model_kwargs={'device': DEVICE})\n        \n        # 用于存储向量的索引\n        self.vector_store = None\n        \n        # 2. LLM 定义 (Generator Step) - 这里为了演示最小化，使用一个简单的 Mock LLM\n        # 在实际生产环境中，替换为 OpenAI, LocalLLaMA, HuggingFacePipeline 等\n        self.llm = SimpleMockLLM() \n\n    def split_documents(self, raw_text: str) -> List[str]:\n        \"\"\"\n        步骤 1: 文档切分 (Slicing)\n        将长文本切分为较小的块，以便更好地进行向量化。\n        \"\"\"\n        # 使用简单的递归字符切分器\n        text_splitter = RecursiveCharacterTextSplitter(\n            chunk_size=300,      # 每个块的字符数限制\n            chunk_overlap=50,    # 块之间的重叠部分，保持上下文连贯\n            length_function=len,\n        )\n        return text_splitter.split_text(raw_text)\n\n    def create_index(self, chunks: List[str]):\n        \"\"\"\n        步骤 2 & 3 (混合): Embedding + Indexing (Retrieval Prep)\n        将切分后的文档向量化并存入向量数据库。\n        \"\"\"\n        print(\"正在生成索引并嵌入文档...\")\n        # 直接根据 chunks 创建 FAISS 实例\n        self.vector_store = FAISS.from_texts(chunks, self.embeddings)\n        print(f\"索引创建完成，共 {len(chunks)} 个块。\")\n\n    def retrieve(self, query: str, k=2):\n        \"\"\"\n        步骤 3: 检索 (Retrieval)\n        根据查询词找到最相似的文档块。\n        \"\"\"\n        if not self.vector_store:\n            raise Exception(\"必须先初始化索引 (create_index)\")\n        \n        print(f\"正在检索与 '{query}' 相关的 {k} 个文档块...\")\n        # 语义相似度搜索\n        docs = self.vector_store.similarity_search(query, k=k)\n        return [doc.page_content for doc in docs]\n\n    def generate(self, context: str, query: str) -> str:\n        \"\"\"\n        步骤 4: 生成 (Generation)\n        将检索到的上下文和查询输入给 LLM，生成最终答案。\n        \"\"\"\n        prompt_template = f\"\"\"基于以下上下文信息回答用户的问题。如果上下文中没有提到，请说明无法回答。\n\n上下文：\n{context}\n\n问题：{query}\n\n回答：\"\"\"\n        \n        prompt = PromptTemplate(\n            input_variables=[\"context\", \"query\"],\n            template=prompt_template",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

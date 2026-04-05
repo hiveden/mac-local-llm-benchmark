@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 1189,
+  "tokens_generated": 123,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 3362,
+  "ttft_ms": 1464,
+  "decode_tok_s": 64.79,
+  "response": "Transformer 摒弃了 RNN 的顺序计算，通过自注意力机制实现并行化并解决长距离依赖问题。其核心包括多头注意力以捕获多维度依赖、正弦位置编码注入序列顺序信息，以及前馈网络配合残差连接与层归一化（现代多用 Pre-LN）保障训练稳定性。解码器采用因果注意力确保自回归生成，适配“解码器仅用”架构。结合 AdamW 优化器与现代并行策略，Transformer 凭借 O(1) 路径长度和强大表达能力，成功扩展至千亿参数规模，成为当代 AI 的基础架构。",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 5,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

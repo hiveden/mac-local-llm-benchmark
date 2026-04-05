@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 151,
+  "tokens_generated": 115,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 2075,
+  "ttft_ms": 348,
+  "decode_tok_s": 66.58,
+  "response": "1. **智能客服助手**：系统实时检索最新的产品手册和故障案例库，为客服人员提供基于事实的精准回复，消除因训练数据滞后导致的解答错误。\n2. **企业内部知识大脑**：员工向 AI 提问时，自动从海量文档、代码库和历史项目中提取关键片段，生成针对特定业务场景的分析报告或代码建议。\n3. **合规与审计风控**：在审核合同或交易记录时，RAG 模型即时关联最新的法律法规和内部合规准则，辅助识别潜在的法律风险点。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 6,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

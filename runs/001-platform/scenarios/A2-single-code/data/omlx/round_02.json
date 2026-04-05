@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1546,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16060,
+  "ttft_ms": 139,
+  "decode_tok_s": 97.1,
+  "response": "这是一个最小化的 RAG（检索增强生成）实现示例。为了保持代码的简洁性和可运行性，我将使用纯 Python 编写，并通过 `sentence-transformers` 库处理 Embedding（向量化），通过 `elasticsearch` 或简单的余弦相似度计算来完成检索逻辑（这里选用内置的 numpy/scipy 计算相似度，以消除外部向量数据库依赖，实现真正的“最小实现”）。\n\n对于生成部分，我们将使用一个简单的占位函数模拟大模型调用。\n\n### 前置准备\n\n你需要安装以下库：\n```bash\npip install sentence-transformers numpy\n```\n\n### 代码实现\n\n```python\nimport numpy as np\nfrom typing import List, Tuple\nfrom sentence_transformers import SentenceTransformer\nfrom sklearn.metrics.pairwise import cosine_similarity\n\n# 1. 定义简单的文档切分器 (Splitter)\ndef split_text(text: str, chunk_size: int = 100, overlap: int = 20) -> List[str]:\n    \"\"\"\n    简单的基于字符长度的文本切分。\n    更复杂的实现通常基于标点符号或段落。\n    \"\"\"\n    chunks = []\n    start = 0\n    while start < len(text):\n        end = start + chunk_size\n        chunk = text[start:end]\n        chunks.append(chunk.strip())\n        start = end - overlap if end < len(text) else end\n    return chunks\n\n# 2. 定义 Embedding 模型\n# 使用一个小模型以加快速度和减少内存占用，生产环境可换为 'all-MiniLM-L6-v2' 或其他大模型\nmodel_name = \"sentence-transformers/all-MiniLM-L6-v2\"\nembedding_model = SentenceTransformer(model_name)\n\n# 3. 定义 RAG 核心逻辑\nclass MinRAG:\n    def __init__(self):\n        self.chunks = []\n        self.vectors = []\n\n    def add_documents(self, raw_text: str):\n        \"\"\"\n        执行步骤 1 (切分) 和 步骤 2 (Embedding)。\n        将文本分块并转换为向量存储。\n        \"\"\"\n        chunks = split_text(raw_text, chunk_size=60, overlap=10)\n        \n        # 记录原始块和对应的向量\n        for chunk in chunks:\n            vector = embedding_model.encode(chunk, convert_to_numpy=True)\n            self.chunks.append(chunk)\n            self.vectors.append(vector)\n        \n        print(f\"[步骤1-2] 文档已处理：生成了 {len(chunks)} 个文本块。\")\n\n    def retrieve(self, query: str, top_k: int = 2) -> List[Tuple[str, float]]:\n        \"\"\"\n        执行步骤 3 (检索)。\n        计算查询向量与所有文档块向量的余弦相似度，返回 top_k 最相关的块。\n        \"\"\"\n        # 将查询转换为向量\n        query_vector = embedding_model.encode(query, convert_to_numpy=True)\n        \n        # 计算余弦相似度\n        # 将 stored vectors 转为 2D 数组\n        similarity_scores = cosine_similarity([query_vector], self.vectors)[0]\n        \n        # 获取 top_k 的索引\n        top_k_indices = np.argsort(similarity_scores)[-top_k:][::-1]\n        \n        results = []\n        for idx in top_k_indices:\n            score = similarity_scores[idx]\n            results.append((self.chunks[idx], score))\n            \n        print(f\"[步骤3] 检索完成：找到 {len(results)} 个相关块，最高相似度: {results[0][1]:.4f}\")\n        return results\n\n    def generate(self, query: str, context_blocks: List[str]) -> str:\n        \"\"\"\n        执行步骤 4 (生成)。\n        这里模拟 LLM 的生成过程。\n        实际场景中，这里会调用 LLM API 并传入 prompt。\n        \"\"\"\n        if not context_blocks:\n            return \"未检索到相关文档，无法生成回答。\"\n        \n        context_str = \"\\n\".join(context_blocks)\n        \n        # 模拟 Prompt 构造\n        prompt = f\"\"\"\n        你是一个智能助手。请根据以下提供的上下文回答用户的问题。如果上下文中没有答案，请说明不知道。\n        \n        上下文:\n        {context_str}\n        \n        问题: {query}\n        回答:\n        \"\"\"\n        \n        # 【模拟生成】：实际项目中这里应该调用 OpenAI/Local LLM 接口\n        # 为了演示，我们简单返回一个合成回答\n        return f\"[模拟生成] 基于上下文，回答您的问题：根据提供的文档片段，核心内容涉及上述文本块中的信息",
+  "reasoning": null,
+  "memory_before_mb": 21156,
+  "memory_after_mb": 21156,
+  "is_warmup": false,
+  "round": 2,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 33.1,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

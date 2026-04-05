@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15719,
+  "ttft_ms": 199,
+  "decode_tok_s": 65.98,
+  "response": "这是一个使用 Python 实现的 **RAG（检索增强生成）最小化原型**。为了保持代码的简洁性和可运行性，我们将省略外部依赖（如 Elasticsearch 或专用的 ChromaDB/Pinecone），而是使用标准库和轻量级假设的逻辑来模拟核心流程。\n\n### 设计思路\n1.  **文档切分 (Document Splitting)**：按字符数将长文本分割成小的“块（Chunks）”。\n2.  **Embedding (嵌入)**：使用一个简单的伪随机函数生成向量（模拟向量化过程），避免引入庞大的 `transformers` 库。\n3.  **检索 (Retrieval)**：计算查询与文档块的余弦相似度，返回最相关的 Top-K。\n4.  **生成 (Generation)**：将检索到的上下文与用户问题组合，由一个简单的“模拟 LLM”函数返回最终答案。\n\n### 代码实现\n\n你可以直接运行以下代码（无需安装 `transformers` 或 `pandas`，仅需标准库）：\n\n```python\nimport math\nimport random\nfrom typing import List, Dict, Tuple\n\n# ==========================================\n# 1. 文档切分 (Document Splitting)\n# ==========================================\ndef split_document(text: str, chunk_size: int = 100) -> List[str]:\n    \"\"\"\n    将长文本按指定长度切分成块。\n    简单实现：按字符截断，不处理句子边界优化（最小化实现）。\n    \"\"\"\n    chunks = []\n    for i in range(0, len(text), chunk_size):\n        chunk = text[i:i + chunk_size]\n        chunks.append(chunk)\n    return chunks\n\n# ==========================================\n# 2. Embedding (模拟向量化)\n# ==========================================\ndef create_embedding(text: str) -> List[float]:\n    \"\"\"\n    模拟生成向量。\n    真实场景中使用 Sentence-BERT, OpenAI API 等。\n    这里使用简单的伪随机哈希方法生成固定长度的向量 (维度=5)。\n    \"\"\"\n    # 设定向量维度\n    dim = 5\n    # 初始化种子（基于文本内容）\n    seed_hash = sum(ord(c) for c in text) \n    random.seed(seed_hash)\n    \n    # 生成随机浮点数作为向量\n    vector = [random.random() for _ in range(dim)]\n    return vector\n\ndef cosine_similarity(v1: List[float], v2: List[float]) -> float:\n    \"\"\"计算两个向量的余弦相似度\"\"\"\n    dot_product = sum(a * b for a, b in zip(v1, v2))\n    norm_v1 = math.sqrt(sum(a * a for a in v1))\n    norm_v2 = math.sqrt(sum(b * b for b in v2))\n    \n    if norm_v1 == 0 or norm_v2 == 0:\n        return 0.0\n    return dot_product / (norm_v1 * norm_v2)\n\n# ==========================================\n# 3. 检索 (Retrieval)\n# ==========================================\ndef embed_chunks(chunks: List[str]) -> List[Dict]:\n    \"\"\"为所有文档块生成向量并索引\"\"\"\n    indexed_docs = []\n    for i, chunk in enumerate(chunks):\n        vec = create_embedding(chunk)\n        indexed_docs.append({\n            \"id\": i,\n            \"text\": chunk,\n            \"embedding\": vec\n        })\n    return indexed_docs\n\ndef retrieve(query: str, corpus: List[Dict], top_k: int = 2) -> List[str]:\n    \"\"\"\n    根据查询向量，从语料库中检索最相关的 Top-K 文本。\n    \"\"\"\n    query_vector = create_embedding(query)\n    results = []\n    \n    for doc in corpus:\n        score = cosine_similarity(query_vector, doc[\"embedding\"])\n        results.append((score, doc[\"text\"]))\n    \n    # 按相似度降序排序\n    results.sort(key=lambda x: x[0], reverse=True)\n    \n    # 返回 top_k 的文本内容\n    return [text for score, text in results[:top_k]]\n\n# ==========================================\n# 4. 生成 (Generation)\n# ==========================================\ndef generate_answer(question: str, context: List[str]) -> str:\n    \"\"\"\n    模拟 LLM 生成答案。\n    真实场景中这里会调用 OpenAI/Cohere/本地大模型 API。\n    这里我们根据上下文内容构造一个简单的回答。\n    \"\"\"\n    if not context:\n        return \"未在知识库中找到相关文档。\"\n    \n    # 模拟构建 Prompt 并提取关键信息 (简化版)\n    combined_context = \"\\n\\n\".join(context)\n    \n    #",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 6,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

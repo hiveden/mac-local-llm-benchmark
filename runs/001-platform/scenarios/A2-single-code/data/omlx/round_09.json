@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1824,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16132,
+  "ttft_ms": 140,
+  "decode_tok_s": 114.06,
+  "response": "这是一个使用 Python 实现的 RAG（检索增强生成）最小化原型。\n\n为了保持代码的**极简性**和**可运行性**，本示例将使用：\n1.  **`langchain-text-splitters`** 进行文档切分（轻量级）。\n2.  **`sentence-transformers`** 进行本地 Embedding（无需 API Key，可离线运行）。\n3.  **`faiss-cpu`** 作为向量数据库（内存存储，极速检索）。\n4.  **Hugging Face Transformers** 进行本地文本生成（或者你可以轻松替换为调用大模型 API）。\n\n### 前置准备\n\n你需要安装以下库：\n\n```bash\npip install langchain langchain-text-splitters sentence-transformers faiss-cpu torch transformers\n```\n\n### 完整代码实现\n\n```python\nimport os\nimport numpy as np\nimport faiss\nfrom typing import List, Tuple, Optional\n\n# 1. 导入必要的库\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\nfrom langchain.schema import Document\nfrom sentence_transformers import SentenceTransformer\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\n\nclass SimpleRAG:\n    def __init__(self, chunk_size: int = 500, chunk_overlap: int = 50, model_name: str = \"all-MiniLM-L6-v2\"):\n        \"\"\"\n        初始化 RAG 系统。\n        :param chunk_size: 文本块大小\n        :param chunk_overlap: 文本块重叠部分\n        :param model_name: embedding 模型名称 (默认使用 MiniLM，轻量且效果好)\n        \"\"\"\n        self.embedding_model = SentenceTransformer(model_name)\n        self.chunk_size = chunk_size\n        self.chunk_overlap = chunk_overlap\n        self.documents: List[Document] = []\n        self.vector_store = None\n        self.embeddings = []\n\n    # ----------------------------------------------------------------------\n    # 步骤 1: 文档切分 (Document Splitting)\n    # ----------------------------------------------------------------------\n    def split_documents(self, raw_text: str) -> None:\n        \"\"\"\n        将原始文本切分为多个小块。\n        \"\"\"\n        text_splitter = RecursiveCharacterTextSplitter(\n            chunk_size=self.chunk_size,\n            chunk_overlap=self.chunk_overlap,\n            length_function=len,\n            separators=[\"\\n\\n\", \"\\n\", \" \", \"\"]\n        )\n        \n        # 将原始文本转换为 LangChain 的 Document 对象\n        docs = text_splitter.create_documents([raw_text])\n        self.documents = docs\n        \n        print(f\"✅ 文档切分完成：生成了 {len(docs)} 个文本块。\")\n\n    # ----------------------------------------------------------------------\n    # 步骤 2: 构建 Embedding 向量库 (Indexing)\n    # ----------------------------------------------------------------------\n    def build_vector_store(self) -> None:\n        \"\"\"\n        将切分后的文本转换为向量，并构建 FAISS 索引。\n        \"\"\"\n        if not self.documents:\n            print(\"❌ 没有文档数据，请先切分文档。\")\n            return\n\n        # 1. 获取所有文本块的文本内容列表\n        texts = [doc.page_content for doc in self.documents]\n        \n        # 2. 使用 SentenceTransformer 生成向量\n        print(\"🤖 正在生成 Embedding 向量... (首次运行需下载模型)\")\n        embeddings = self.embedding_model.encode(texts, normalize_embeddings=True)\n        \n        # 3. 构建 FAISS 索引\n        # D 是向量维度，M 是索引模式，nlist 是聚类数\n        dimension = embeddings.shape[1]\n        self.vector_store = faiss.IndexFlatIP(dimension) # 使用内积相似度 (IP) 或 L2\n        # 注意：normalize_embeddings=True 后，内积等同于余弦相似度\n        self.vector_store.add(embeddings.astype(np.float32))\n        \n        # 保存原始文档对象以便检索后获取源文本\n        self.texts = texts\n        print(f\"✅ 向量索引构建完成，索引大小：{self.vector_store.ntotal}\")\n\n    # ----------------------------------------------------------------------\n    # 步骤 3: 检索 (Retrieval)\n    # ----------------------------------------------------------------------\n    def retrieve(self, query: str, top_k: int = 2) -> List[str]:\n        \"\"\"\n        根据查询文本检索最相关的 k 个文本块。\n        :return: 返回相关的文本内容列表\n        \"\"\"\n        if self.vector_store is None:\n            print(\"❌ 索引未构建。\")\n            return []\n\n        # 将查询转换为向量\n        query_vector = self.embedding_model.encode([query], normalize_embeddings=True)\n",
+  "reasoning": null,
+  "memory_before_mb": 21157,
+  "memory_after_mb": 21157,
+  "is_warmup": false,
+  "round": 9,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 32.9,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

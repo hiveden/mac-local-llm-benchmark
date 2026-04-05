@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 1189,
+  "tokens_generated": 122,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 3320,
+  "ttft_ms": 1455,
+  "decode_tok_s": 65.41,
+  "response": "Transformer 摒弃 RNN 的串行限制，利用自注意力机制实现任意节点间的并行连接与长距离依赖建模。其核心包括：通过 QKV 线性变换及缩放点积计算注意力分数；引入多头注意力增强特征表达力；借助正弦/余弦或旋转位置编码注入序列信息；结合位置前馈网络（FFN）与残差归一化结构保障深层训练稳定性；解码器采用因果注意力满足自回归需求。配合 AdamW 优化及现代并行策略，该架构能扩展至千亿参数规模，成为当前大模型的基础。",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": true,
+  "round": 1,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 100,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 2016,
+  "ttft_ms": 288,
+  "decode_tok_s": 57.89,
+  "response": "1. **企业智能知识库助手**：通过检索内部文档库回答员工关于公司制度、产品手册或技术规范的复杂提问，确保回复的准确性和实时性。\n2. **自动化数据分析与报告生成**：连接企业数据库或历史交易记录，检索关键数据后由大模型自动撰写经营分析报告，大幅降低人工统计成本。\n3. **客户支持语义匹配**：在电商或金融客服场景中，实时检索标准服务流程与过往案例，辅助智能客服输出合规且符合具体情境的解答。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21159,
+  "memory_after_mb": 21159,
+  "is_warmup": false,
+  "round": 3,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 27.1,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 2,
+            "partial_tokens_skipped": 125,
+            "last_partial_tokens_skipped": 107,
+            "last_tokens_to_next_block": 1941,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

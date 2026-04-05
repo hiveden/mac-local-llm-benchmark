@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1721,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16206,
+  "ttft_ms": 139,
+  "decode_tok_s": 107.11,
+  "response": "这是一个使用 Python 实现的 RAG（检索增强生成）最小可行产品（MVP）。\n\n为了保持代码**轻量且无需配置 API Key**，本示例将使用本地化的 `sentence-transformers` 库进行 Embedding 和简单的向量距离计算（代替昂贵的在线向量数据库），并使用 `openpyxl` 模拟生成步骤（你可以轻松替换为调用 LLM API）。\n\n### 核心依赖\n\n你需要安装 `sentence-transformers` 来处理 Embedding 和简单的相似性计算。\n\n```bash\npip install sentence-transformers openpyxl\n```\n\n### 最小实现代码\n\n```python\nimport os\nimport math\nfrom typing import List, Dict\nfrom sentence_transformers import SentenceTransformer\nfrom sentence_transformers.util import cosine_similarity\n\n# --- 步骤 1: 文档切分 (Chunking) ---\ndef chunk_text(text: str, chunk_size: int = 200, overlap: int = 50) -> List[str]:\n    \"\"\"\n    简单的按字符长度切分文本，并处理重叠。\n    \"\"\"\n    chunks = []\n    start = 0\n    while start < len(text):\n        end = start + chunk_size\n        # 如果剩余不足 chunk_size，直接截取\n        if end >= len(text):\n            chunks.append(text[start:])\n            break\n        \n        # 尝试在句号处切分（简单策略，防止句子切断）\n        # 如果没有句号，就强制切分\n        chunk_text = text[start:end]\n        last_dot = chunk_text.rfind('.')\n        if last_dot > chunk_size * 0.5: # 只在后半部分找到句号才切分\n            chunks.append(chunk_text[:last_dot+1])\n            start = end - overlap if (end - overlap) > start else end # 重叠处理\n        else:\n            chunks.append(chunk_text)\n            start = end\n    return chunks\n\n# --- 步骤 2: Embedding 生成 ---\nclass EmbeddingEngine:\n    def __init__(self, model_name: str = 'all-MiniLM-L6-v2'):\n        print(f\"正在加载 Embedding 模型: {model_name} ...\")\n        self.model = SentenceTransformer(model_name)\n        print(\"模型加载完成。\")\n\n    def get_embedding(self, text: str) -> List[float]:\n        return self.model.encode(text, convert_to_tensor=False).tolist()\n\n    def get_embeddings(self, texts: List[str]) -> List[List[float]]:\n        return self.model.encode(texts, convert_to_tensor=False).tolist()\n\n# --- 步骤 3: 向量检索 (Retrieval) ---\nclass VectorStore:\n    def __init__(self):\n        self.documents = [] # 存储原始 chunk 文本\n        self.embeddings = [] # 存储对应的向量\n\n    def add_chunks(self, chunks: List[str], embedding_engine: EmbeddingEngine):\n        embeddings = embedding_engine.get_embeddings(chunks)\n        self.documents = chunks\n        self.embeddings = embeddings\n        print(f\"已添加 {len(chunks)} 个文档块到向量库。\")\n\n    def search(self, query: str, embedding_engine: EmbeddingEngine, top_k: int = 3) -> List[Dict]:\n        \"\"\"\n        计算查询向量与库中向量的余弦相似度，返回 Top-K 结果。\n        \"\"\"\n        query_embedding = embedding_engine.get_embedding(query)\n        \n        scores = cosine_similarity([query_embedding], self.embeddings)[0]\n        \n        # 获取最大 k 个分数的索引\n        # numpy.argmax 只能取最大值，这里手动排序\n        indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)\n        \n        results = []\n        for idx in indices[:top_k]:\n            results.append({\n                \"chunk\": self.documents[idx],\n                \"score\": float(scores[idx])\n            })\n        \n        return results\n\n# --- 步骤 4: 生成 (Generation) ---\nclass SimpleGenerator:\n    def generate(self, query: str, context_chunks: List[str]) -> str:\n        \"\"\"\n        模拟生成步骤。\n        在实际项目中，这里会调用 LLM API (如 OpenAI, 本地 Ollama 等) \n        prompt: \"基于以下上下文回答用户问题：{context} 问题：{query}\"\n        \"\"\"\n        if not context_chunks:\n            return \"未找到相关上下文，无法回答。\"\n        \n        context_str = \"\\n\".join([f\"- {c}\" for c in context_chunks])\n        \n        # 模拟 LLM 的回答逻辑\n        # 实际应用中请替换为 requests.post(...) 调用 API\n        prompt = f\"\"\"\n基于以下提供的上下文信息",
+  "reasoning": null,
+  "memory_before_mb": 21157,
+  "memory_after_mb": 21157,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 32.8,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

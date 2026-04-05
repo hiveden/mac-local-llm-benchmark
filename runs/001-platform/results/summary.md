@@ -7,47 +7,47 @@
 
 | Provider | Prompt | Rounds | TTFT (median) | tok/s (median) | tok/s (stdev) | 总耗时 (median) | 峰值内存 |
 |----------|--------|--------|--------------|---------------|--------------|----------------|---------|
-| mlx-lm |  | 9 | 172ms | N/A | N/A | 1298ms | 19237MB |
-| ollama |  | 9 | 150ms | 65.58 | 0.83 | 1877ms | 21504MB |
-| omlx |  | 9 | 88ms | N/A | N/A | 1877ms | 21243MB |
+| mlx-lm |  | 9 | 1573ms | N/A | N/A | 2688ms | 19239MB |
+| ollama |  | 9 | 133ms | 66.09 | 0.29 | 1662ms | 21504MB |
+| omlx |  | 9 | 87ms | N/A | N/A | 1795ms | 21697MB |
 
 ## A2-single-code
 
 | Provider | Prompt | Rounds | TTFT (median) | tok/s (median) | tok/s (stdev) | 总耗时 (median) | 峰值内存 |
 |----------|--------|--------|--------------|---------------|--------------|----------------|---------|
-| mlx-lm |  | 9 | 175ms | N/A | N/A | 12010ms | 19293MB |
-| ollama |  | 9 | 216ms | 64.62 | 0.38 | 16062ms | 21504MB |
-| omlx |  | 9 | 141ms | N/A | N/A | 16528ms | 21251MB |
+| mlx-lm |  | 9 | 1624ms | N/A | N/A | 12941ms | 19236MB |
+| ollama |  | 9 | 199ms | 66.1 | 0.27 | 15699ms | 21504MB |
+| omlx |  | 9 | 140ms | N/A | N/A | 16109ms | 21157MB |
 
 ## A3-single-long
 
 | Provider | Prompt | Rounds | TTFT (median) | tok/s (median) | tok/s (stdev) | 总耗时 (median) | 峰值内存 |
 |----------|--------|--------|--------------|---------------|--------------|----------------|---------|
-| mlx-lm |  | 9 | 176ms | N/A | N/A | 1598ms | 19260MB |
-| ollama |  | 9 | 1523ms | 64.16 | 0.4 | 3453ms | 21504MB |
-| omlx |  | 9 | 1332ms | N/A | N/A | 3205ms | 21262MB |
+| mlx-lm |  | 9 | 2806ms | N/A | N/A | 4199ms | 19240MB |
+| ollama |  | 9 | 1455ms | 65.46 | 0.3 | 3282ms | 21504MB |
+| omlx |  | 9 | 1317ms | N/A | N/A | 3078ms | 21155MB |
 
 ## E1-gemma4-cross
 
 | Provider | Prompt | Rounds | TTFT (median) | tok/s (median) | tok/s (stdev) | 总耗时 (median) | 峰值内存 |
 |----------|--------|--------|--------------|---------------|--------------|----------------|---------|
-| ollama |  | 9 | 313ms | 45.71 | 0.7 | 2634ms | 23552MB |
-| omlx |  | 9 | 116ms | N/A | N/A | 1662ms | 18988MB |
+| ollama |  | 9 | 316ms | 46.66 | 0.65 | 2512ms | 23552MB |
+| omlx |  | 9 | 116ms | N/A | N/A | 1706ms | 18828MB |
 
 ## E2-gemma4-long
 
 | Provider | Prompt | Rounds | TTFT (median) | tok/s (median) | tok/s (stdev) | 总耗时 (median) | 峰值内存 |
 |----------|--------|--------|--------------|---------------|--------------|----------------|---------|
-| ollama |  | 9 | 2693ms | 40.3 | 0.79 | 7732ms | 23552MB |
-| omlx |  | 9 | 411ms | N/A | N/A | 3688ms | 19073MB |
+| ollama |  | 9 | 2655ms | 40.68 | 1.4 | 7659ms | 23552MB |
+| omlx |  | 9 | 408ms | N/A | N/A | 3740ms | 18491MB |
 
 ## B1-multi-turn — 多轮缓存分析
 
 | Provider | Turn | Rounds | TTFT (median) | TTFT stdev | tok/s (median) | Cache Speedup |
 |----------|------|--------|--------------|-----------|---------------|--------------|
-| mlx-lm | T1 | 9 | 158ms | 3.97 | N/A | — |
-| mlx-lm | T2 | 9 | 157ms | 3.21 | N/A | 1.01x |
-| ollama | T1 | 9 | 150ms | 6.2 | 65.6 | — |
-| ollama | T2 | 9 | 359ms | 4.93 | 65.47 | 0.42x |
-| omlx | T1 | 9 | 88ms | 0.78 | N/A | — |
-| omlx | T2 | 9 | 330ms | 12.35 | N/A | 0.27x |
+| mlx-lm | T1 | 9 | 1662ms | 49.13 | N/A | — |
+| mlx-lm | T2 | 9 | 420ms | 7.3 | N/A | 3.96x |
+| ollama | T1 | 9 | 133ms | 3.91 | 66.29 | — |
+| ollama | T2 | 9 | 356ms | 6.19 | 66.3 | 0.37x |
+| omlx | T1 | 9 | 89ms | 3.61 | N/A | — |
+| omlx | T2 | 9 | 304ms | 17.6 | N/A | 0.29x |

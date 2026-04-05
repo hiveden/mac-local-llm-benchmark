@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "gemma4:26b",
+  "prompt_tokens": 18,
+  "tokens_generated": 94,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 2321,
+  "ttft_ms": 306,
+  "decode_tok_s": 46.66,
+  "response": "RAG（检索增强生成）的工作原理可以概括为：**在模型回答问题之前，先从外部知识库中检索出与问题相关的实时或私有信息，并将其作为“参考资料”与原始问题一起输入给大模型，从而让模型能够基于这些准确的背景知识进行回答，从而有效解决大模型由于训练数据滞后或知识匮乏导致的“幻觉”问题。**",
+  "reasoning": null,
+  "memory_before_mb": 23552,
+  "memory_after_mb": 23552,
+  "is_warmup": false,
+  "round": 5,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

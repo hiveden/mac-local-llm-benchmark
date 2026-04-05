@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 102,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 3053,
+  "ttft_ms": 1318,
+  "decode_tok_s": 58.79,
+  "response": "Transformer 摒弃 RNN，基于自注意力机制实现并行计算并解决长距离依赖。其核心包括：自注意力通过 Query/Key/Value 计算关系；多头注意力增强表达能力；正弦位置编码注入序列顺序信息；残差连接与层归一化（常用 Pre-LN）保障深层训练；前馈网络常采用 SwiGLU。解码器结合因果掩码实现自回归生成，配合 AdamW 优化与混合精度训练，使模型可扩展至千亿规模，成为现代 AI 基石。",
+  "reasoning": null,
+  "memory_before_mb": 21155,
+  "memory_after_mb": 21155,
+  "is_warmup": false,
+  "round": 7,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 29.2,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

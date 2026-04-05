@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15625,
+  "ttft_ms": 198,
+  "decode_tok_s": 66.38,
+  "response": "这是一个基于 `LangChain`（目前最流行的 RAG 框架）的 RAG（检索增强生成）最小实现。为了简化环境依赖，我们将使用 Python 的标准库、`sentence-transformers`（用于 Embedding）和 `openai`（用于 LLM 调用），并配合 `faiss` 或简单的内存字典来实现向量存储。\n\n### 1. 准备工作\n\n你需要安装以下依赖：\n\n```bash\npip install langchain langchain-core langchain-community sentence-transformers openai faiss-cpu python-dotenv\n```\n\n> **注意**：代码中假设你有一个环境变量 `OPENAI_API_KEY`。如果没有，请自行替换为示例的 Mock LLM 或真实 API Key。\n\n### 2. 最小实现代码 (`rag_minimal.py`)\n\n这段代码包含了一个完整的类结构，分为四个核心步骤：**文档切分**、**Embedding**、**检索**、**生成**。\n\n```python\nimport os\nimport re\nfrom typing import List, Dict, Any\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\nfrom langchain.vectorstores.faiss import FAISS # 使用 FAISS 作为向量存储\nfrom langchain.embeddings import HuggingFaceEmbeddings # 本地 Embedding 模型，无需 API Key\nfrom langchain.chains import LLMChain\nfrom langchain.llms import OpenAI # 这里使用 OpenAI，也可替换为其他支持 OpenAI API 的模型\nfrom langchain.prompts import PromptTemplate\n\n# --- 配置区域 ---\n# 如果你没有 OpenAI API Key，可以创建一个 dummy model 类来模拟生成步骤\nclass DummyLLM:\n    def generate(self, texts, stop=None):\n        return [\"[这是模拟生成的答案：基于上下文 '...']\"] # 实际返回格式需适配 chain\n\nos.environ[\"OPENAI_API_KEY\"] = \"sk-your-key-here\" \n# 如果只是为了演示流程，可以注释掉上面的 Key，使用 DummyLLM 替换下方的 llm_var\n\n# 1. 模拟 LLM (如果没有 API Key)\nllm_var = None \ntry:\n    from langchain.chat_models import ChatOpenAI\n    llm_var = ChatOpenAI(model_name=\"gpt-3.5-turbo\", temperature=0)\nexcept Exception:\n    print(\"未检测到有效的 OpenAI API Key，将使用模拟生成器。\")\n    llm_var = DummyLLM()\n\n# 初始化 Embedding 模型 (使用本地 BERT 模型，无需联网下载权重的情况下先缓存一次)\n# 实际生产中建议使用 faster-whisper 或 sentence-transformers/bert-base-chinese 等\nembedding_model = HuggingFaceEmbeddings(model_name=\"sentence-transformers/all-MiniLM-L6-v2\")\n\nclass SimpleRAG:\n    def __init__(self):\n        self.splitter = RecursiveCharacterTextSplitter(\n            chunk_size=400,          # 每次切分大小\n            chunk_overlap=50,        # 重叠部分，防止关键信息丢失\n            length_function=len,\n            separators=[\"\\n\\n\", \"\\n\", \" \", \"\"]\n        )\n        self.vector_store = None # 初始为空\n    \n    def step1_split_documents(self, raw_text: str) -> List[str]:\n        \"\"\"\n        步骤1：文档切分 (Document Splitting)\n        将长文本切分为符合 Embedding 窗口大小的片段。\n        \"\"\"\n        chunks = self.splitter.split_text(raw_text)\n        print(f\"--- 步骤1完成: 原始文本被切分为 {len(chunks)} 个片段 ---\")\n        return chunks\n\n    def step2_embed_and_store(self, chunks: List[str]):\n        \"\"\"\n        步骤2：Embedding & 向量存储 (Embedding & Vector Store)\n        将文本转换为向量并建立索引。\n        \"\"\"\n        print(\"--- 步骤2完成: 正在生成 Embedding 并构建向量库 ---\")\n        self.vector_store = FAISS.from_texts(chunks, embedding_model)\n        # 可选：添加元数据\n        # docs_with_metadata = [{\"page_content\": c, \"source\": \"demo\"} for c in chunks]\n        # self.vector_store = FAISS.from_documents(docs_with_metadata, embedding_model)\n\n    def step3_retrieve(self, query: str, top_k: int = 2) -> List[str]:\n        \"\"\"\n        步骤3：检索 (Retrieval)\n        根据用户问题检索最相关的文档片段。\n        \"\"\"\n        print(f\"--- 步骤3完成: 正在检索与 '{query}' 最相关的 {top_k} 个片段 ---\")\n        if not self.vector_store:\n            raise ValueError(\"向量库为空，",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 2,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

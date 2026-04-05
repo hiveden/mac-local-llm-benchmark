@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15721,
+  "ttft_ms": 205,
+  "decode_tok_s": 66.0,
+  "response": "这是一个非常经典的 RAG (Retrieval-Augmented Generation) 最小实现示例。为了保持代码简洁且可运行，我们将使用 `langchain`（处理流程）配合 `sentence-transformers`（本地 Embedding）和简单的模拟 LLM，这样你无需配置 API Key 即可直接运行测试。\n\n### 核心步骤概览\n1.  **文档切分 (Text Splitting)**: 将长文本分割成包含语义的片段。\n2.  **Embedding**: 将切片后的文本转化为向量（Vector）。\n3.  **检索 (Retrieval)**: 计算查询向量与库向量的相似度，找出最相关的片段。\n4.  **生成 (Generation)**: 将检索到的上下文和原始问题输入模型，生成最终答案。\n\n### 前置准备\n你需要安装以下库：\n```bash\npip install langchain sentence-transformers torch\n# 如果需要使用更高级的 LLM，也可以安装 transformers 或 openai\n```\n\n### 完整代码实现\n\n```python\nimport os\nimport re\nfrom typing import List, Tuple\n\n# 使用 LangChain 处理基础流程\nfrom langchain.text_splitter import CharacterTextSplitter\nfrom langchain.vectorstores import FAISS  # 需安装: pip install faiss-cpu\nfrom langchain.embeddings import HuggingFaceEmbeddings\nfrom langchain.llms import FakeListLLM\n\n# 为了演示方便，我们创建一个包含“知识库”的字符串模拟文档\nKNOWLEDGE_BASE = \"\"\"\n机器学习的核心概念包括监督学习、无监督学习和强化学习。\n在监督学习中，模型通过标注数据集进行训练，常见的算法有线性回归和随机森林。\n无监督学习则是在没有标签的数据中发现模式，例如聚类分析（K-means）和降维（PCA）。\n深度学习是机器学习的一个子集，利用多层神经网络来学习复杂的数据表示，如卷积神经网络 (CNN) 用于图像处理。\nTransformer 架构目前在大语言模型中占据主导地位，其核心机制是自注意力机制 (Self-Attention)。\n\"\"\"\n\nclass SimpleRAG:\n    def __init__(self):\n        # 1. 初始化 Embedding 模型 (使用本地轻量级模型，无需 API Key)\n        print(\"正在加载 Embedding 模型...\")\n        self.embeddings = HuggingFaceEmbeddings(model_name=\"sentence-transformers/all-MiniLM-L6-v2\")\n        \n        # 2. 定义文本切分器\n        self.text_splitter = CharacterTextSplitter(chunk_size=150, chunk_overlap=50)\n\n    def step_1_chunking(self, text: str) -> List[str]:\n        \"\"\"\n        步骤 1: 文档切分 (Document Chunking)\n        将长文本分割成小的语义块。\n        \"\"\"\n        chunks = self.text_splitter.split_text(text)\n        print(f\"[切分] 原始长度: {len(text)} -> 生成 {len(chunks)} 个片段\")\n        for i, chunk in enumerate(chunks):\n            print(f\"  片段 {i+1}: ...{chunk[:50]}...\")\n        return chunks\n\n    def step_2_embedding(self, chunks: List[str]):\n        \"\"\"\n        步骤 2: Embedding (向量化)\n        将文本片段转换为向量列表，并构建向量数据库。\n        \"\"\"\n        print(f\"[嵌入] 正在将 {len(chunks)} 个片段转换为向量...\")\n        # 使用 FAISS 创建向量存储库 (在内存中演示，生产环境通常用 Milvus, Chroma 等)\n        self.vector_store = FAISS.from_texts(texts=chunks, embedding=self.embeddings)\n        print(\"[嵌入] 向量库构建完成。\")\n\n    def step_3_retrieval(self, query: str, k: int = 2):\n        \"\"\"\n        步骤 3: 检索 (Retrieval)\n        计算查询与知识库的相似度，返回 Top-K 个最相关的片段。\n        \"\"\"\n        print(f\"[检索] 查询问题：'{query}'\")\n        \n        # 查找相似文档\n        docs = self.vector_store.similarity_search(query, k=k)\n        \n        if not docs:\n            return []\n            \n        retrieved_texts = [doc.page_content for doc in docs]\n        print(f\"[检索] 找到 {len(retrieved_texts)} 个相关片段：\")\n        for i, text in enumerate(retrieved_texts):\n            print(f\"  关联度 {i+1}: {text[:60]}...\")\n        return retrieved_texts\n\n    def step_4_generation(self, query: str, context: List[str]) -> str:\n        \"\"\"",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 7,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

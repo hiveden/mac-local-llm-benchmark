@@ -1,0 +1,53 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 134,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 2319,
+  "ttft_ms": 88,
+  "decode_tok_s": 60.07,
+  "response": "RAG（检索增强生成）的工作原理可以形象地理解为让大语言模型在回答问题前先进行“开卷考试”：当用户提出问题时，系统首先会在外部向量数据库或知识库中**检索**与当前问题高度相关的文档片段或事实信息；接着，系统将检索到的原始内容作为**上下文提示**（Prompt）与大语言模型原有的内部知识**组合**在一起，构建出一个包含“内部通用知识 + 外部最新事实”的完整输入；最后，模型基于这个扩充后的上下文**生成**出既符合人类语言风格、又具备高精度事实依据的回答，从而有效克服了大模型知识滞后、容易产生幻觉以及无法访问私有数据等局限性。",
+  "reasoning": null,
+  "turn": 1,
+  "memory_before_mb": 18362,
+  "memory_after_mb": 18362,
+  "is_warmup": true,
+  "round": 1,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 27.3,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

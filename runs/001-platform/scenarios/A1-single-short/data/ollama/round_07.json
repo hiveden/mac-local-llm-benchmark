@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 20,
+  "tokens_generated": 125,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 2015,
+  "ttft_ms": 133,
+  "decode_tok_s": 66.42,
+  "response": "检索增强生成（RAG）是一种将大型语言模型的“知识检索”与“内容生成”能力深度融合的技术架构，其核心工作原理在于：当用户提出问题时，系统首先通过向量数据库快速从外部专业知识库中检索出最相关的上下文片段（如最新文档、内部数据等），随后将这些检索到的信息与原始问题一同组装成增强后的提示词输入给大语言模型，让模型在“既懂通用常识又掌握具体背景信息”的情况下生成更精准、事实性更强且具备实时性的回答，从而有效缓解了传统大模型存在的知识滞后和“幻觉”问题。",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 7,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

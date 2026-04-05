@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1570,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16307,
+  "ttft_ms": 141,
+  "decode_tok_s": 97.12,
+  "response": "这是一个基于 `langchain` 生态库的 RAG（检索增强生成）最小实现方案。为了保持代码简洁且易于运行，我们将使用 Python 标准的库结构，并假设用户拥有相应的 API 密钥（如 OpenAI 的 API Key）。\n\n这个实现涵盖了 RAG 的四个核心步骤：\n1.  **文档切分 (Chunking)**：将长文本拆分为小块。\n2.  **Embedding (嵌入)**：将文本块转换为向量。\n3.  **检索 (Retrieval)**：计算查询向量与库中向量的相似度并找回最相关的块。\n4.  **生成 (Generation)**：将检索到的上下文与用户问题结合，发送给 LLM 生成最终回答。\n\n### 前置准备\n\n你需要安装以下库：\n\n```bash\npip install langchain langchain-core langchain-text-splitters langchain-openai\n# 如果你不使用 OpenAI，可以替换为其他 embedding 和 LLM 的适配器\n```\n\n### 完整代码实现\n\n```python\nimport os\nfrom langchain.text_splitter import CharacterTextSplitter\nfrom langchain_openai import OpenAIEmbeddings, ChatOpenAI\nfrom langchain_chroma import Chroma  # 使用 Chroma 作为简单的本地向量数据库\nfrom langchain.document_loaders import TextLoader\n\n# 设置环境变量 (请替换为你的真实 API Key)\n# os.environ[\"OPENAI_API_KEY\"] = \"sk-...\" \n\nclass SimpleRAG:\n    def __init__(self, text_content, api_key):\n        \"\"\"\n        初始化 RAG 系统\n        :param text_content: 待处理的原始文本字符串\n        :param api_key: OpenAI API Key\n        \"\"\"\n        os.environ[\"OPENAI_API_KEY\"] = api_key\n        \n        # 1. 文档加载与切分 (Chunking)\n        self._setup_text_splitter()\n        self.documents = self._split_text(text_content)\n        \n        # 2. 生成 Embedding 并构建向量数据库 (Vector Store)\n        self._setup_vector_store()\n        \n        # 3. 初始化生成模型 (Generator)\n        self.llm = ChatOpenAI(model=\"gpt-4o\", temperature=0)\n        \n    def _setup_text_splitter(self):\n        \"\"\"\n        初始化文本切分器：按字符切分，每块约 500 字符，留 50 字符重叠\n        \"\"\"\n        self.text_splitter = CharacterTextSplitter(\n            separator=\"\\n\\n\",\n            chunk_size=500,\n            chunk_overlap=50,\n            length_function=len\n        )\n\n    def _split_text(self, text_content):\n        \"\"\"\n        执行切分操作\n        \"\"\"\n        # 模拟加载文本（直接使用字符串构造文档对象）\n        return self.text_splitter.split_text(text_content)\n\n    def _setup_vector_store(self):\n        \"\"\"\n        构建向量数据库：\n        - 使用 OpenAI 的 embedding 模型\n        - 使用 Chroma 作为轻量级内存向量存储\n        \"\"\"\n        embeddings = OpenAIEmbeddings()\n        # persist_directory 设为内存临时路径，或者设为空字符串\n        self.vector_store = Chroma.from_documents(\n            documents=self.documents,\n            embedding=embeddings,\n            persist_directory=\".vector_db\" # 本地持久化（可选）\n        )\n\n    def retrieve_and_generate(self, query):\n        \"\"\"\n        执行检索与生成流程\n        :param query: 用户的问题\n        :return: 生成的回答\n        \"\"\"\n        # 3. 检索 (Retrieval)\n        # 在向量库中搜索与 query 最相似的 Top 3 个文档块\n        retriever = self.vector_store.as_retriever(search_kwargs={\"k\": 3})\n        context_docs = retriever.invoke(query)\n        \n        # 将检索到的文档内容拼接成字符串上下文\n        context_str = \"\\n\\n\".join([doc.page_content for doc in context_docs])\n        \n        # 4. 生成 (Generation)\n        # 构建 Prompt：将上下文和问题结合\n        prompt = f\"\"\"\n        基于以下上下文回答用户的问题。如果上下文中没有答案，请说明“无法从提供的资料中找到答案”。\n\n        上下文内容：\n        {context_str}\n\n        用户问题：\n        {query}\n        \"\"\"\n        \n        response = self.llm.invoke(prompt)\n        return response.content\n\n    def print_info(self):\n        \"\"\"辅助打印：查看分块后的文档数量\"\"\"\n        print(f\"原始文本已切分为 {len(self.documents)} 个文档块。\")\n        print(f\"向量库已构建完成",
+  "reasoning": null,
+  "memory_before_mb": 20098,
+  "memory_after_mb": 20099,
+  "is_warmup": true,
+  "round": 1,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 33.1,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

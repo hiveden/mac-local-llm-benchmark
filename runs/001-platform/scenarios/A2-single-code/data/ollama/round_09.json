@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15667,
+  "ttft_ms": 199,
+  "decode_tok_s": 66.2,
+  "response": "这是一个使用 Python 实现的 **RAG（检索增强生成）最小原型**。为了保持“最小化”且无需依赖大型本地模型或 API Key，我们将使用以下轻量级策略：\n\n1.  **嵌入模型 (Embedding)**: 使用 `sentence-transformers`（开源、本地运行）或模拟简单向量。这里推荐使用 `SentenceTransformer` (从 HuggingFace) 以获得真实效果；如果无法下载，代码中预留了 Mock 版本。\n2.  **向量存储**: 使用 `faiss` (Facebook AI Similarity Search)，这是工业界标准的轻量级向量库。\n3.  **文档切分**: 简单的按字符或语义切分。\n4.  **生成**: 为了最小化，我们模拟一个“基于上下文的问答生成器”（实际应用中会替换为 LLM API，如 OpenAI）。\n\n### 前置依赖安装\n\n你需要安装以下库：\n\n```bash\npip install sentence-transformers faiss-cpu pypdf tiktoken\n```\n*(注：如果你的系统无法安装 `sentence-transformers`，代码中提供了一个基于数学运算的“模拟模式”备选方案)*\n\n---\n\n### 完整代码实现 (`rag_minimal.py`)\n\n```python\nimport os\nimport re\nfrom typing import List, Dict\nimport faiss\nimport numpy as np\n\n# 1. 引入必要的库 (使用 Mock 模式以防无法下载模型，实际生产请取消注释)\ntry:\n    from sentence_transformers import SentenceTransformer\n    USE_REAL_EMBEDDING = True\nexcept ImportError:\n    print(\"警告：未检测到 sentence-transformers，将使用简单的数值模拟模式。\")\n    USE_REAL_EMBEDDING = False\n\n# =============================================================================\n# 步骤 1: 文档切分 (Document Chunking)\n# =============================================================================\ndef chunk_documents(texts: List[str], chunk_size: int = 500, overlap: int = 50) -> List[str]:\n    \"\"\"\n    简单的基于字符长度的切分。\n    :param texts: 原始文档列表\n    :param chunk_size: 每个 chunk 的最大长度\n    :param overlap: 重叠字符数，保留上下文信息\n    :return: 切分后的文本列表\n    \"\"\"\n    chunks = []\n    for text in texts:\n        if not text:\n            continue\n        # 简单的按句号分割再重组（伪语义切分），实际可用 NLP 模型切分\n        sentences = re.split(r'[。！？;]', text)\n        current_chunk = \"\"\n        \n        for sent in sentences:\n            if len(current_chunk) + len(sent) > chunk_size and current_chunk:\n                chunks.append(current_chunk.strip())\n                # 保留重叠部分：取最后 overlap 个字符作为下一段的开头\n                current_chunk = current_chunk[-overlap:] \n            current_chunk += sent + \"。\"\n        \n        if current_chunk:\n            chunks.append(current_chunk.strip())\n    return chunks\n\n# =============================================================================\n# 步骤 2: Embedding (向量化)\n# =============================================================================\nclass VectorStore:\n    def __init__(self):\n        self.chunks = []\n        self.embeddings = None\n        self.index = None\n        self._init_model()\n\n    def _init_model(self):\n        if USE_REAL_EMBEDDING:\n            print(\"正在加载本地 Embedding 模型 (BERT-based)...\")\n            # 'all-MiniLM-L6-v2' 是一个轻量且效果不错的开源模型\n            try:\n                self.model = SentenceTransformer('all-MiniLM-L6-v2')\n            except Exception as e:\n                print(f\"加载模型失败：{e}，回退到模拟模式。\")\n                USE_REAL_EMBEDDING.__setattr__(self, 'model', None) # 简单粗暴的回退逻辑\n                return \n        else:\n            self.model = None\n\n    def generate_embedding(self, text: str) -> np.ndarray:\n        if self.model is not None:\n            # 真实嵌入：返回 shape (128,) 的向量\n            embedding = self.model.encode(text, show_progress_bar=False)\n            return embedding.reshape(1, -1)\n        else:\n            # 模拟模式：随机生成一个长度为 128 的浮点数向量\n            # 仅用于演示代码逻辑，检索准确性极差\n            return np.random.rand(1, 128) * 0.5\n\n    def add_chunks(self, texts: List[str]):\n        \"\"\"添加文档并建立索引\"\"\"\n        chunks = chunk_documents(texts)\n        self.chunks.extend(chunks)\n        \n        if len(self.chunks) == 1 or not isinstance(self.model, type(None)):",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 9,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

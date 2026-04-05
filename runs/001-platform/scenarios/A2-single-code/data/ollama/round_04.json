@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15626,
+  "ttft_ms": 199,
+  "decode_tok_s": 66.38,
+  "response": "这是一个基于 **`langchain`**（业界标准库）和 **`chromadb`**（轻量级本地向量数据库）的最小化 RAG（检索增强生成）实现。\n\n该实现完全在本地运行，不需要调用外部 API 密钥（除非你配置了模型），使用了开源的 `sentence-transformers` 进行向量化，以及开源的 `llama-cpp-python` 或直接使用预训练 LLM（为了演示简洁性，这里我们将模拟“生成”步骤，或者你可以替换为真实的本地/在线 LLM）。\n\n### 前置准备\n\n你需要安装以下库：\n```bash\npip install langchain langchain-community sentence-transformers chromadb\n# 如果需要使用本地大模型（如 llama-3），还需要安装: pip install llama-cpp-python\n```\n\n### 代码实现 (`rag_minimal.py`)\n\n```python\nimport os\nfrom typing import List\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\nfrom langchain_community.vectorstores import Chroma\nfrom langchain_community.embeddings import SentenceTransformerEmbeddings\nfrom langchain_community.llms import Ollama\nfrom langchain_core.prompts import ChatPromptTemplate\nfrom langchain_core.output_parsers import StrOutputParser\n\n# ==========================================\n# 1. 模拟数据源 (实际应用中从文件或数据库读取)\n# ==========================================\nDOCUMENTS = [\n    \"Python 是一种解释型、面向对象、动态数据类型的高级程序设计语言。\",\n    \"向量检索是通过将文本转换为高维向量，然后计算向量相似度来查找相关文档的过程。\",\n    \"RAG (Retrieval-Augmented Generation) 是一种利用检索结果增强大模型生成的技术，可以有效减少幻觉。\",\n    \"Jupyter Notebook 是交互式计算环境，常用于数据科学和机器学习项目。\"\n]\n\n# ==========================================\n# 2. 文档切分 (Document Splitting)\n# ==========================================\ndef split_documents(docs: List[str]) -> List[str]:\n    \"\"\"\n    使用 RecursiveCharacterTextSplitter 将长文本切分为小块(chunk)。\n    这是处理长文档的关键步骤，保证 Embedding 和检索的准确性。\n    \"\"\"\n    splitter = RecursiveCharacterTextSplitter(\n        chunk_size=50,      # 每个块最大字符数\n        chunk_overlap=10,   # 块之间的重叠部分，帮助保留上下文\n        length_function=len,\n    )\n    return splitter.split_documents(docs)\n\n# ==========================================\n# 3. Embedding (向量化)\n# ==========================================\ndef create_embeddings(chunks: List[str]):\n    \"\"\"\n    使用 SentenceTransformerEmbeddings (本地运行，无需 API Key)\n    将文本块转换为向量。\n    注意：首次运行会自动下载模型，请保持网络连接。\n    \"\"\"\n    # 加载预训练的中文/英文混合模型 bge-small-zh-v1.5 或 english 模型\n    # 这里使用通用的 sentence-transformers 默认模型以简化演示\n    embeddings = SentenceTransformerEmbeddings(model_name=\"sentence-transformers/all-MiniLM-L6-v2\")\n    return embeddings\n\n# ==========================================\n# 4. 构建向量索引 (Vector Store)\n# ==========================================\ndef build_vector_store(chunks: List[str], embeddings_inst):\n    \"\"\"\n    将切分后的文档和对应的 Embedding 存入 ChromaDB。\n    ChromaDB 是一个轻量级的本地向量数据库。\n    \"\"\"\n    vector_store = Chroma.from_texts(\n        texts=chunks,\n        embedding=embeddings_inst,\n        persist_directory=\"./chroma_db\"  # 数据持久化在本地磁盘\n    )\n    return vector_store\n\n# ==========================================\n# 5. 检索 (Retrieval) & 生成 (Generation)\n# ==========================================\ndef retrieve_and_generate(query: str, vector_store, llm_model):\n    \"\"\"\n    执行 RAG 流程：\n    1. 将问题向量化并检索最相似的文档。\n    2. 构建提示词 (Prompt)。\n    3. 调用大模型生成答案。\n    \"\"\"\n    \n    # A. 检索相关上下文\n    retriever = vector_store.as_retriever(search_kwargs={\"k\": 2}) # 取最相关的 2 个文档\n    context_docs = retriever.invoke(query)\n    \n    # 将检索到的内容拼接成字符串\n    context_text = \"\\n\\n\".join([doc.page_content for doc in context_docs]) if context_docs else \"未找到相关信息。\"\n    \n    print(f\"--- 检索到的上下文 ---\\n{context_text}\\n\")\n\n    # B. 构建提示词模板\n    prompt_template = \"\"\"\n    你是一个智能助手。请根据以下给定的上下文信息",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 4,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 162,
+  "tokens_generated": 137,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 2447,
+  "ttft_ms": 366,
+  "decode_tok_s": 65.82,
+  "response": "1. **智能客服系统**：RAG 能实时调用最新的产品手册与售后政策，确保客服机器人精准回答用户关于条款变更的咨询，彻底避免基于过时知识库产生的幻觉错误。\n2. **企业知识助手**：通过连接内部海量文档库（如研发记录、财务年报），RAG 帮助员工快速提取特定项目的关键信息并生成结构化报告，大幅缩短跨部门信息检索时间。\n3. **合规与风控分析**：在审核合同或法规时，RAG 自动检索最新法律法规案例，辅助法务人员识别潜在风险条款并提供基于具体法条的合规建议，降低人为疏漏风险。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 7,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

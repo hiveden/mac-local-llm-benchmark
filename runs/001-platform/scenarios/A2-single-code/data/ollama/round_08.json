@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15730,
+  "ttft_ms": 211,
+  "decode_tok_s": 65.99,
+  "response": "这是一个基于 **最小依赖（Minimal Dependencies）** 的 RAG（检索增强生成）系统实现。\n\n为了让代码可以直接运行且无需配置复杂的 API Key（如 OpenAI），我选择了本地库：\n1.  **`sentence-transformers`**: 用于本地嵌入模型生成向量（轻量、免费）。\n2.  **`faiss-cpu`**: Facebook 开发的向量检索库，性能极高。\n3.  **模拟的 LLM**: 由于本地运行大模型需要极高算力，此处用一个简单的“模板匹配 + 关键词注入”来模拟生成过程。\n\n### 前置准备\n\n你需要安装以下两个核心库：\n\n```bash\npip install sentence-transformers faiss-cpu\n```\n\n### Python 代码实现\n\n```python\nimport re\nfrom typing import List, Tuple\nimport numpy as np\nimport faiss\nfrom sentence_transformers import SentenceTransformer\n\n# ==========================================\n# 1. 文档切分 (Document Splitting)\n# ==========================================\ndef split_text_to_chunks(text: str, chunk_size: int = 150, overlap: int = 20) -> List[str]:\n    \"\"\"\n    简单的文本切分：按字符长度切分，保留重叠部分。\n    生产环境通常会使用 NLTK 或 Spacy 进行语义分割。\n    \"\"\"\n    chunks = []\n    # 简单按字符分割，避免中间切断单词太严重（此处简化处理）\n    start = 0\n    while start < len(text):\n        end = start + chunk_size\n        if end > len(text):\n            chunks.append(text[start:])\n            break\n        \n        # 尝试在空格处切分以保持语义完整\n        chunk_end_index = text.rfind(' ', start, end)\n        if chunk_end_index == -1:\n            chunk_end_index = end\n            \n        chunk_text = text[start:chunk_end_index]\n        chunks.append(chunk_text.strip())\n        \n        start = chunk_end_index + overlap # 重叠部分\n    return chunks\n\n# ==========================================\n# 2. Embedding (向量化)\n# ==========================================\nclass VectorIndex:\n    def __init__(self):\n        # 使用轻量级本地模型 BERT-base-chinese，无需 API Key\n        # 如果环境不支持中文，可改为 'all-MiniLM-L6-v2'\n        self.model = SentenceTransformer('all-MiniLM-L6-v2') \n        self.dimension = 384  # minilm 模型的输出维度\n        \n    def embed(self, texts: List[str]) -> np.ndarray:\n        \"\"\"将文本列表转换为向量矩阵\"\"\"\n        embeddings = self.model.encode(texts, show_progress_bar=False)\n        return embeddings.astype('float32')\n\n# ==========================================\n# 3. 检索 (Retrieval)\n# ==========================================\nclass VectorStoreSearch:\n    def __init__(self):\n        # faiss 是用于相似度搜索的高效库\n        self.index = None\n        \n    def add(self, embeddings: np.ndarray):\n        \"\"\"向 FAISS 索引中添加向量\"\"\"\n        dimension = embeddings.shape[1]\n        self.dimension = dimension\n        # 使用 L2 距离 (Euclidean) 进行检索，也可以用 IP (Inner Product)\n        self.index = faiss.IndexFlatL2(dimension)\n        self.index.add(embeddings)\n        \n    def search(self, query_vector: np.ndarray, top_k: int = 3) -> List[float]:\n        \"\"\"执行 KNN 搜索，返回相似度分数\"\"\"\n        if self.index is None:\n            return []\n        \n        D, I = self.index.search(query_vector.reshape(1, -1), k=top_k)\n        # faiss 返回的是距离 (Distance)，越小越相似。\n        # 这里我们直接返回距离，在生成阶段可以用负数作为相似度权重\n        return D.flatten()\n\n# ==========================================\n# 4. 生成 (Generation) - 模拟 LLM\n# ==========================================\nclass SimpleLLM:\n    def generate(self, query: str, context: List[str]) -> str:\n        \"\"\"\n        模拟 LLM 行为：\n        实际生产中这里会调用 OpenAI/Llama 等 API，或者本地部署 vLLM/llama.cpp。\n        这里我们做一个简单的基于上下文的回答生成器。\n        \"\"\"\n        if not context:\n            return \"抱歉，在知识库中未找到相关信息。\"\n        \n        # 构造一个极简的 Prompt\n        prompt = f\"\"\"\n        请根据以下上下文回答用户的问题。如果上下文中没有答案，请回答“信息不足”。\n        \n        上下文：\n        {\"\".join(context)}\n        \n        问题：{query}\n        回答：",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 8,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

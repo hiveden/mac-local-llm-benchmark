@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 20,
+  "tokens_generated": 111,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 1826,
+  "ttft_ms": 134,
+  "decode_tok_s": 65.6,
+  "response": "RAG（检索增强生成）通过“先查后答”的机制解决了传统大模型的知识滞后与幻觉问题：当用户提出问题时，系统首先会在外部知识库中快速检索出与问题最相关的文档片段，将这些经过筛选的实时信息作为上下文背景“注入”到大模型的提示词中，随后引导大模型基于这些权威资料进行理解、推理并生成最终回答；这种方式不仅让模型能够利用最新数据提升回复的准确性和可解释性，还有效抑制了其因训练数据局限性而产生的虚构内容。",
+  "reasoning": null,
+  "turn": 1,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 7,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

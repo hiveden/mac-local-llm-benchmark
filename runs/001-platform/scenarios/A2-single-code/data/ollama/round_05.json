@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15699,
+  "ttft_ms": 207,
+  "decode_tok_s": 66.1,
+  "response": "这是一个非常经典的简化版 RAG（Retrieval-Augmented Generation）实现。为了方便演示和理解，我们将使用以下轻量级技术栈：\n\n*   **文本切分**：`textsplitter` (使用基础字符串逻辑或简单的 `CharacterTextSplitter`)\n*   **Embedding**：`sentence-transformers` (本地运行模型，无需 API Key)\n*   **向量检索**：`faiss` (Facebook 开源的向量索引库，速度极快)\n*   **文本生成**：`transformers` (使用本地轻量模型如 `BART` 或 `FLAN-T5`，或者如果你只想演示逻辑，可以用一个模拟函数代替)\n\n### 前置准备\n\n你需要安装以下依赖库：\n\n```bash\npip install sentence-transformers faiss-cpu transformers torch pyyaml\n```\n*(注：`faiss-cpu` 代表 CPU 版本，如果显卡可用可换为 `faiss-gpu`) *\n\n### Python 实现代码\n\n下面的代码在一个文件中实现了完整的四个步骤。为了确保代码可以直接运行（不需要复杂的 API Key），我使用了本地模型路径。\n\n```python\nimport os\nimport numpy as np\nfrom typing import List, Dict, Any\nfrom collections import namedtuple\n\n# --- 依赖导入 ---\ntry:\n    from sentence_transformers import SentenceTransformer\n    from transformers import AutoTokenizer, AutoModelForSeq2SeqLM\nexcept ImportError:\n    print(\"请确保已安装：pip install sentence-transformers transformers torch faiss-cpu\")\n    raise\n\nimport faiss\nfrom sklearn.preprocessing import normalize  # 用于 L2 归一化 (可选，视模型而定)\n\n# 配置常量\nMODEL_NAME_EMBED = \"all-MiniLM-L6-v2\"  # 轻量级嵌入模型\nMODEL_NAME_GEN = \"patrickvonplaten/flan-t5-small\" # 轻量级生成模型 (或使用 flant5_small)\nCHUNK_SIZE = 100   # 切片大小\nCHUNK_OVERLAP = 20 # 重叠字符数\n\n# --- 步骤 1: 文档切分 (Document Chunking) ---\ndef split_documents(texts: str, chunk_size=CHUNK_SIZE, overlap=CHUNK_OVERLAP) -> List[str]:\n    \"\"\"\n    将长文本切分为固定大小的片段\n    \"\"\"\n    chunks = []\n    start_idx = 0\n    length = len(texts)\n    \n    if length <= chunk_size:\n        return [texts]\n\n    while start_idx < length:\n        end_idx = start_idx + chunk_size\n        # 尽量在句子结束处切分 (简单逻辑，实际可用 regex 优化)\n        # 这里为了简化，直接取子串，实际生产中通常使用 NLTK/Spacy 按句子分割\n        chunk = texts[start_idx:end_idx]\n        chunks.append(chunk.strip())\n        \n        if end_idx >= length:\n            break\n            \n        start_idx = end_idx - overlap\n        \n    return chunks\n\n# --- 步骤 2 & 3: Embedding 与 向量检索索引构建 (Embedding & Indexing) ---\nclass VectorStoreIndex:\n    def __init__(self, model_name=\"all-MiniLM-L6-v2\"):\n        print(f\"正在加载 Embedding 模型: {model_name} ...\")\n        self.model = SentenceTransformer(model_name)\n        self.index = None\n        self.embeddings = []\n        \n    def add_documents(self, texts: List[str]):\n        \"\"\"\n        将文档列表转换为向量并添加到 Faiss 索引中\n        \"\"\"\n        if not texts:\n            return\n            \n        # 获取 Embedding 向量\n        embeddings = self.model.encode(texts)\n        \n        # 将列表转为 numpy 数组 (float32 是 faiss 需要的格式)\n        embed_array = np.array(embeddings).astype('float32')\n        \n        if self.index is None:\n            # 初始化索引，维度为嵌入向量的长度\n            dimension = embed_array.shape[1]\n            # 使用 L2 距离 (欧氏距离) 或 IP (内积) 搜索\n            # faiss 默认是 L2，IP 需要归一化并设置指数标度\n            self.index = faiss.IndexFlatL2(dimension)\n            \n        # 将向量添加到索引中\n        self.index.add(embed_array)\n        \n        # 保存原始文本以便后续检索时使用\n        self.embeddings.extend(texts)\n\n# --- 步骤 4: 检索与生成 (Retrieval & Generation) ---\ndef retrieve(query: str, index: VectorStoreIndex, k=3):\n    \"\"\"\n    根据查询获取 top-k 个相关文档片段",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 5,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

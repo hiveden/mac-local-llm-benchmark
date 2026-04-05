@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 158,
+  "tokens_generated": 114,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 2066,
+  "ttft_ms": 354,
+  "decode_tok_s": 66.59,
+  "response": "1. **企业智能客服**：系统自动检索最新的产品手册和服务规范，确保客服机器人能精准回答用户关于具体业务规则的咨询，避免编造信息。\n2. **内部知识库问答**：员工可自然语言询问分散在文档、代码库或会议纪要中的复杂问题，模型直接基于检索到的真实文件片段生成条理清晰的解答。\n3. **合规与风控辅助**：在生成合同草案或审计报告时，系统实时检索最新的法律法规和内部政策，确保生成的内容严格符合当前监管要求并附带法规依据。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": true,
+  "round": 1,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

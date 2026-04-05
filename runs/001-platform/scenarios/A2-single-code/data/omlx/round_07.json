@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1562,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16091,
+  "ttft_ms": 140,
+  "decode_tok_s": 97.93,
+  "response": "这是一个基于 Python 的 RAG（检索增强生成）最小实现示例。为了保持代码的独立性和可运行性，我们将使用纯 Python 库 `sentence-transformers`（用于 Embedding）和 `faiss`（用于向量检索），并使用 `openai` 库作为生成器的占位符（你可以根据需要替换为本地 LLM 或 OpenAI API）。\n\n### 环境准备\n\n你需要安装以下库：\n\n```bash\npip install sentence-transformers faiss-cpu openai numpy\n```\n\n*注意：`faiss-cpu` 用于本地向量检索，`sentence-transformers` 用于生成文本嵌入向量。*\n\n### 最小实现代码\n\n```python\nimport os\nimport re\nimport numpy as np\nimport faiss\nfrom typing import List, Tuple, Dict\nfrom sentence_transformers import SentenceTransformer\n# 如果你有 OpenAI Key，取消注释并设置 KEY\n# from openai import OpenAI \n# client = OpenAI(api_key=os.getenv(\"OPENAI_API_KEY\"))\n\n# --- 模拟一个本地生成函数 (为了演示方便，这里不依赖外部 API) ---\ndef mock_llm_generate(query: str, context: str) -> str:\n    \"\"\"\n    模拟 LLM 生成。\n    实际场景中，这里调用 OpenAI/HuggingFace/Llama 等 API。\n    \"\"\"\n    # 简单模拟：将问题和上下文中最有价值的一个句子拼接\n    return f\"根据上下文：{context[:50]}... \\n回答：这是一个基于 RAG 生成的模拟答案，针对问题：{query}\"\n\n# --- 1. 文档切分 (Chunking) ---\ndef split_text(text: str, chunk_size: int = 200) -> List[str]:\n    \"\"\"\n    简单的按字符切分，保留标点符号。\n    实际项目中通常会使用 LangChain 的 RecursiveCharacterTextSplitter。\n    \"\"\"\n    # 尝试按句号、换行符等自然断点切分\n    sentences = re.split(r'(?<=[.!?])\\s+', text)\n    chunks = []\n    current_chunk = \"\"\n\n    for sentence in sentences:\n        if len(current_chunk) + len(sentence) <= chunk_size:\n            current_chunk += sentence + \" \"\n        else:\n            if current_chunk:\n                chunks.append(current_chunk.strip())\n            current_chunk = sentence + \" \"\n    \n    if current_chunk:\n        chunks.append(current_chunk.strip())\n        \n    return chunks\n\n# --- 2. & 3. Embedding & 向量检索 (FAISS) ---\nclass VectorStore:\n    def __init__(self, embedding_model: str = \"all-MiniLM-L6-v2\"):\n        self.model = SentenceTransformer(embedding_model)\n        self.faiss_index = faiss.IndexFlatL2(384) # 384 is the dimension of MiniLM\n        self.chunks: List[str] = []\n\n    def add_chunks(self, chunks: List[str]):\n        \"\"\"添加文档块并构建索引\"\"\"\n        if not chunks:\n            return\n        \n        # 生成嵌入向量\n        embeddings = self.model.encode(chunks)\n        \n        # 归一化向量 (FAISS L2 索引有时需要归一化，FlatL2 不需要，但 L2 距离计算本身兼容)\n        # 这里使用 L2 索引，直接将向量存入\n        embeddings_normalized = embeddings.astype('float32') # FAISS 要求 float32\n        \n        # 将向量添加到 Faiss 索引\n        # embeddings_normalized.shape: (num_chunks, 384)\n        self.faiss_index.add(embeddings_normalized)\n        \n        # 存储原始文本，用于后续检索返回上下文\n        self.chunks.extend(chunks)\n\n    def retrieve(self, query: str, top_k: int = 3) -> List[str]:\n        \"\"\"检索最相似的 top_k 个文本块\"\"\"\n        query_embedding = self.model.encode([query]).astype('float32')\n        \n        # 在索引中搜索\n        # D: 距离, I: 索引位置\n        D, I = self.faiss_index.search(query_embedding, top_k)\n        \n        # 如果索引为空，返回空列表\n        if not self.chunks:\n            return []\n            \n        # 根据索引获取原始文本\n        retrieved_texts = [self.chunks[idx] for idx in I[0]]\n        return retrieved_texts\n\n# --- 4. 生成 (Generation) ---\ndef generate_response(query: str, context_chunks: List[str]) -> str:\n    \"\"\"\n    将检索到的上下文和查询发送给 LLM 生成最终答案。\n    \"\"\"\n    if not context_chunks:\n",
+  "reasoning": null,
+  "memory_before_mb": 21156,
+  "memory_after_mb": 21156,
+  "is_warmup": false,
+  "round": 7,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 32.9,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

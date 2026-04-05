@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1704,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16118,
+  "ttft_ms": 139,
+  "decode_tok_s": 106.64,
+  "response": "这是一个基于 Python 的 RAG (Retrieval-Augmented Generation) 向量检索系统的最小实现。\n\n为了保持代码的**极简性**和**可运行性**，本实现使用本地库：\n1.  **文本处理**: `re` (正则表达式) 用于切分，`numpy` 用于简单的向量计算（模拟 embedding）。\n    *   *注：实际生产中请使用 `sentence-transformers` 或 `openai`/`huggingface` 的 API。*\n2.  **向量数据库**: 使用 `numpy` 矩阵计算余弦相似度（模拟向量检索）。\n3.  **生成**: 使用简单的字符串模板或随机替换（模拟大模型生成）。\n\n*如果您需要连接真实的大模型和真实的 Embedding 模型，我在代码注释中提供了替换方案。*\n\n### 最小化 RAG 实现代码\n\n```python\nimport re\nimport random\nimport math\nfrom typing import List, Dict, Any\n\n# ==========================================\n# 1. 文档切分 (Text Splitting)\n# ==========================================\ndef split_text(text: str, chunk_size: int = 100, overlap: int = 20) -> List[str]:\n    \"\"\"\n    将长文本切分为重叠的段落。\n    \"\"\"\n    # 简单按字符数切分（生产环境通常按句号、换行符切分）\n    chunks = []\n    for i in range(0, len(text), chunk_size - overlap):\n        chunk = text[i : i + chunk_size]\n        chunks.append(chunk.strip())\n    return chunks\n\n# ==========================================\n# 2. 向量化 (Embedding)\n# ==========================================\nclass FakeEmbedding:\n    \"\"\"\n    模拟 Embedding 模型。\n    真实场景请替换为：sentence_transformers.SentenceTransformer('all-MiniLM-L6-v2')\n    或调用 OpenAI/HuggingFace API。\n    这里使用简单的字符频率哈希来模拟生成固定维度的向量。\n    \"\"\"\n    DIMENSION = 100  # 向量维度\n\n    def __init__(self):\n        self.vector_map = {}\n\n    def _hash_to_vector(self, text: str) -> List[float]:\n        # 简单的伪随机生成固定维度向量 (基于文本内容)\n        seed = hash(text)\n        random.seed(seed)\n        return [random.random() for _ in range(self.DIMENSION)]\n\n    def embed_documents(self, texts: List[str]) -> List[List[float]]:\n        return [self._hash_to_vector(t) for t in texts]\n\n    def embed_query(self, text: str) -> List[float]:\n        return self._hash_to_vector(text)\n\n# ==========================================\n# 3. 向量检索 (Vector Retrieval)\n# ==========================================\ndef cosine_similarity(vec_a: List[float], vec_b: List[float]) -> float:\n    \"\"\"\n    计算两个向量的余弦相似度。\n    \"\"\"\n    dot_product = sum(a * b for a, b in zip(vec_a, vec_b))\n    magnitude_a = math.sqrt(sum(a * a for a in vec_a))\n    magnitude_b = math.sqrt(sum(b * b for b in vec_b))\n    \n    if magnitude_a == 0 or magnitude_b == 0:\n        return 0.0\n    return dot_product / (magnitude_a * magnitude_b)\n\nclass SimpleVectorStore:\n    def __init__(self, texts: List[str]):\n        self.texts = texts\n        self.embeddings = []\n        self.embedding_model = FakeEmbedding()\n        self._build_index()\n\n    def _build_index(self):\n        self.embeddings = self.embedding_model.embed_documents(self.texts)\n\n    def retrieve(self, query: str, top_k: int = 2) -> List[Dict[str, Any]]:\n        query_vec = self.embedding_model.embed_query(query)\n        \n        # 计算相似度得分\n        scores = []\n        for i, emb in enumerate(self.embeddings):\n            sim = cosine_similarity(query_vec, emb)\n            scores.append((i, sim))\n        \n        # 按相似度降序排列\n        scores.sort(key=lambda x: x[1], reverse=True)\n        \n        # 返回 top_k 结果\n        results = []\n        for idx, score in scores[:top_k]:\n            results.append({\n                \"content\": self.texts[idx],\n                \"score\": score,\n                \"index\": idx\n            })\n        return results\n\n# ==========================================\n# 4. 生成 (Generation)\n# ==========================================\ndef generate_response(context: List[str], query: str) -> str:\n    \"\"\"\n    模拟",
+  "reasoning": null,
+  "memory_before_mb": 21156,
+  "memory_after_mb": 21156,
+  "is_warmup": false,
+  "round": 3,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 33.1,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

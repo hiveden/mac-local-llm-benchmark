@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 152,
+  "tokens_generated": 121,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 2174,
+  "ttft_ms": 353,
+  "decode_tok_s": 66.45,
+  "response": "1. **智能企业知识库问答**：员工可向系统提问内部文档（如操作手册或政策），模型实时检索相关条款并生成精准答复，替代传统低效的关键词搜索。\n2. **个性化营销内容生成**：营销团队输入客户画像数据，RAG 自动关联历史购买记录与最新市场报告，辅助大模型快速产出高度定制化的营销文案。\n3. **动态竞品与市场情报分析**：系统实时抓取行业新闻、研报及社交媒体数据，结合大模型分析能力为企业提供基于最新事实的即时趋势洞察与竞争策略建议。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

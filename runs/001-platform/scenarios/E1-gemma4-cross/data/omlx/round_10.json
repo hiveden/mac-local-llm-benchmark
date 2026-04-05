@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "gemma-4-26b-a4b-it-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 68,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 1796,
+  "ttft_ms": 117,
+  "decode_tok_s": 40.51,
+  "response": "RAG（检索增强生成）的工作原理是：在模型生成回答之前，先从外部知识库（如文档、数据库）中检索与用户问题相关的实时或专业信息，将这些检索到的“知识片段”与原始问题一起喂给大模型，从而让模型能够基于最新的、准确的参考资料进行回答，有效解决了模型产生“幻觉”和知识滞后的问题。",
+  "reasoning": null,
+  "memory_before_mb": 17341,
+  "memory_after_mb": 17341,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 26.4,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "gemma-4-26b-a4b-it-4bit",
+            "block_size": 1024,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<1024",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 19,
+            "last_partial_tokens_skipped": 19,
+            "last_tokens_to_next_block": 1005,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          1024
+        ]
+      }
+    }
+  }
+}

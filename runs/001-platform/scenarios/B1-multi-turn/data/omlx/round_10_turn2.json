@@ -1,0 +1,53 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 81,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 1719,
+  "ttft_ms": 297,
+  "decode_tok_s": 56.98,
+  "response": "1. 企业知识问答助手：允许员工通过自然语言快速检索内部文档，精准获取公司制度、技术手册等专业知识。\n2. 智能客服系统：使客服机器人能够结合最新的产品数据和订单记录，回答客户关于具体业务政策或账户状态的复杂疑问。\n3. 行业研报分析：帮助分析师自动从海量市场报告中提取关键数据和观点，生成基于事实依据的定制化行业洞察摘要。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21160,
+  "memory_after_mb": 21160,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 26.6,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 2,
+            "partial_tokens_skipped": 126,
+            "last_partial_tokens_skipped": 108,
+            "last_tokens_to_next_block": 1940,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

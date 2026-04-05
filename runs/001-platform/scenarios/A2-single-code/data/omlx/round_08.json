@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1664,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16117,
+  "ttft_ms": 140,
+  "decode_tok_s": 104.15,
+  "response": "这是一个使用纯 Python 和 `langchain` 生态库（配合 `sentence-transformers` 作为本地 Embedding 模型，`chromadb` 作为轻量级向量库）编写的 **RAG (检索增强生成) 最小实现**。\n\n这个实现不需要庞大的服务器环境，可以在本地直接运行，涵盖了文档切分、向量嵌入、向量检索和提示词生成四个核心步骤。\n\n### 前置准备\n\n你需要安装以下 Python 库：\n\n```bash\npip install langchain langchain-text-splitters sentence-transformers chromadb\n```\n\n> **注意**：`sentence-transformers` 会自动下载轻量级模型（如 `all-MiniLM-L6-v2`），这是第一个运行可能需要几分钟下载网络资源。\n\n### 完整代码实现\n\n```python\nimport os\nimport re\nfrom typing import List, Optional\n\n# 1. 导入必要的库\nfrom langchain_text_splitters import CharacterTextSplitter\nfrom langchain_community.embeddings import SentenceTransformerEmbeddings\nfrom langchain_community.vectorstores import Chroma\nfrom langchain_core.documents import Document\nfrom langchain_core.prompts import ChatPromptTemplate\n\n# 配置本地模型路径（可选，如果不想用 cloud API 的话）\n# 我们使用本地免费的 SentenceTransformer 模型和 ChromaDB 存储\n\nclass MinimalRAG:\n    def __init__(self, model_name: str = \"all-MiniLM-L6-v2\"):\n        # 1. 初始化 Embedding 模型 (将文本转为向量)\n        self.embeddings = SentenceTransformerEmbeddings(model_name=model_name)\n        self.vector_store = None\n        self.index = None\n\n    def create_splitter(self, chunk_size: int = 500, chunk_overlap: int = 50):\n        \"\"\"\n        2. 文档切分 (Chunking)\n        将长文本拆分成较小的片段，适合向量模型处理。\n        \"\"\"\n        return CharacterTextSplitter(\n            separator=\"\\n\",\n            chunk_size=chunk_size,\n            chunk_overlap=chunk_overlap,\n            length_function=len,\n            is_separator_regex=False\n        )\n\n    def load_documents(self, raw_text: str) -> List[Document]:\n        \"\"\"\n        将原始文本转换为 Langchain 的 Document 对象\n        \"\"\"\n        return [Document(page_content=raw_text)]\n\n    def initialize_vector_store(self, documents: List[Document]):\n        \"\"\"\n        3. 构建索引 (Embedding & Storage)\n        计算向量并存入 ChromaDB (本地文件存储)。\n        \"\"\"\n        text_splitter = self.create_splitter()\n        chunks = text_splitter.split_documents(documents)\n        \n        # 使用 ChromaDB 进行向量检索\n        # persist_directory 表示向量库存储的本地文件夹\n        self.vector_store = Chroma.from_documents(\n            documents=chunks,\n            embedding=self.embeddings,\n            persist_directory=\"./chroma_db\" \n        )\n        self.index = self.vector_store.as_retriever()\n\n    def retrieve_and_generate(self, query: str, context_size: int = 3) -> str:\n        \"\"\"\n        4. 检索与生成 (Retrieval & Generation)\n        搜索相关片段，并构建提示词。\n        注意：这里为了最小化实现，我们模拟了一个简单的“生成”逻辑（拼接上下文）。\n        真实场景中，这里会调用 LLM (如 Llama 3, Qwen, 或 ChatGPT API)。\n        \"\"\"\n        if self.vector_store is None:\n            raise RuntimeError(\"请先运行 initialize_vector_store 加载文档。\")\n\n        # 检索最相关的 top_k 个文档片段\n        docs = self.vector_store.similarity_search(query, k=context_size)\n        \n        # 提取文本内容\n        context_texts = \"\\n\\n\".join([doc.page_content for doc in docs])\n        \n        # 模拟生成步骤 (实际开发中应调用 ChatOpenAI 或 HuggingFacePipeline)\n        # 如果环境允许连接大模型 API，这里可以替换为 LLM.generate(prompt)\n        # 为了演示最小化，我们直接拼接回答逻辑\n        \n        prompt_template = f\"\"\"\n        基于以下提供的上下文信息回答用户的问题。\n        如果上下文没有相关信息，请说明你不知道。\n\n        上下文:\n        {context_texts}\n\n        用户问题: {query}\n\n        回答:\n        \"\"\"\n        \n        # 这里直接返回拼接后的字符串作为“生成结果”\n        # 如果你有本地大模型（如 Llama 3 via Ollama），可以将下面这行替换为 LLM.run(prompt_template)\n        return f\"[检索到的上下文已加载]\\n基于上下文回答：在此处",
+  "reasoning": null,
+  "memory_before_mb": 21157,
+  "memory_after_mb": 21156,
+  "is_warmup": false,
+  "round": 8,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 32.9,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 1189,
+  "tokens_generated": 123,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 3323,
+  "ttft_ms": 1451,
+  "decode_tok_s": 65.7,
+  "response": "Transformer 摒弃传统 RNN，以自注意力机制解决长距离依赖与并行化难题，实现 O(1) 路径长度。其核心包括：通过 Q、K、V 线性变换计算注意力分数；利用多头注意力从不同子空间捕获信息；引入位置编码（如正弦或 RoPE）弥补无位置信息的缺陷；结合残差连接与前馈网络（现代多用 SwiGLU）保障训练稳定。解码器采用因果掩码维持自回归性质，配合 AdamW 优化器及多种并行策略，支撑了数千亿参数规模的大模型发展。",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

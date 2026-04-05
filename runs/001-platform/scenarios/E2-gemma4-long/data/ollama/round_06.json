@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "gemma4:26b",
+  "prompt_tokens": 1258,
+  "tokens_generated": 209,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 7614,
+  "ttft_ms": 2655,
+  "decode_tok_s": 42.15,
+  "response": "这篇文章深入解析了 Transformer 架构的核心设计及其演进。其核心要点包括：\n\n1. **核心机制**：通过自注意力机制取代 RNN 的循环结构，解决了并行化计算与长距离依赖问题；利用多头注意力增强模型对不同子空间信息的捕捉能力。\n2. **关键组件**：引入位置编码（如正弦/余弦或 RoPE）注入序列顺序信息；采用前馈网络（FFN）、残差连接与层归一化（Pre-LN）确保深层网络训练的稳定性。\n3. **架构演进**：从原始的 Encoder-Decoder 结构演进为主流的 Decoder-only 架构，并应用了 SwiGLU 激活函数、因果掩码及 AdamW 优化等现代技术。\n4. **设计优势**：其 $O(1)$ 的最长路径长度和强大的可扩展性，使其成为现代大规模预训练语言模型的基础。",
+  "reasoning": null,
+  "memory_before_mb": 23552,
+  "memory_after_mb": 23552,
+  "is_warmup": false,
+  "round": 6,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

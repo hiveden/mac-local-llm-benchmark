@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15631,
+  "ttft_ms": 198,
+  "decode_tok_s": 66.35,
+  "response": "这是一个使用 Python 实现的 **RAG（检索增强生成）最小化示例**。\n\n为了保持代码的简洁性和可运行性（无需安装庞大的本地 AI 库），我们将使用：\n1.  **`LangChain`** (或纯 `numpy`/`sklearn` 思路，但为了通用性这里用轻量级实现)：这里我将使用 **pure Python + `sentence-transformers`** 的思路，避免依赖过重的数据库组件，让代码更直观。\n2.  **`sentence-transformers`**: 用于生成 Embedding（向量化）。\n3.  **Cosine Similarity (余弦相似度)**: 用于计算向量距离和检索最相关的文档。\n\n### 前置准备\n\n你需要安装以下库：\n```bash\npip install sentence-transformers numpy\n```\n\n> **注意**：第一次运行时，`sentence-transformers` 会自动下载一个小型模型（约 100MB-500MB），请确保网络畅通。\n\n---\n\n### 代码实现\n\n```python\nimport numpy as np\nfrom typing import List, Tuple, Optional\nfrom sentence_transformers import SentenceTransformer\n\n# ==========================================\n# 1. 文档切分 (Text Splitting)\n# ==========================================\ndef simple_split_docs(texts: List[str]) -> List[str]:\n    \"\"\"\n    将输入文本按句子或固定长度分割成小块（Chunks）。\n    这里使用简单的按句号分割作为示例。\n    \"\"\"\n    chunks = []\n    for text in texts:\n        # 简单的按标点符号分割逻辑，实际项目中通常使用更复杂的策略\n        sentences = [s.strip() for s in text.replace('\\n', ' ').split('.') if s.strip()]\n        chunks.extend(sentences)\n    return chunks\n\n# ==========================================\n# 2. Embedding (向量化)\n# ==========================================\nclass VectorStore:\n    def __init__(self):\n        # 加载一个轻量级的预训练模型 (all-MiniLM-L6-v2)\n        self.model = SentenceTransformer('all-MiniLM-L6-v2')\n        self.embeddings = None\n\n    def add_documents(self, chunks: List[str]) -> None:\n        \"\"\"将文本块转换为向量矩阵\"\"\"\n        if not chunks:\n            return\n        \n        # 生成所有 chunk 的嵌入向量\n        embeddings = self.model.encode(chunks)\n        self.embeddings = np.array(embeddings)\n\n    def get_embedding(self, text: str) -> np.ndarray:\n        \"\"\"获取单个文本的向量\"\"\"\n        return self.model.encode([text])[0]\n\n# ==========================================\n# 3. 检索 (Retrieval)\n# ==========================================\nclass RAGRetriever:\n    def __init__(self, vector_store: VectorStore, top_k: int = 2):\n        self.vector_store = vector_store\n        self.top_k = top_k\n\n    @staticmethod\n    def cosine_similarity(vec1: np.ndarray, vec2: np.ndarray) -> float:\n        \"\"\"计算两个向量的余弦相似度\"\"\"\n        dot_product = np.dot(vec1, vec2)\n        norm_product = np.linalg.norm(vec1) * np.linalg.norm(vec2)\n        if norm_product == 0:\n            return 0.0\n        return dot_product / norm_product\n\n    def retrieve(self, query: str) -> List[Tuple[str, float]]:\n        \"\"\"\n        根据查询检索最相关的文档片段。\n        返回：(文档内容，相似度分数) 列表\n        \"\"\"\n        query_vector = self.vector_store.get_embedding(query)\n        \n        # 计算与所有存储向量的相似度\n        scores = []\n        for i, chunk in enumerate(self.vector_store.embeddings):\n            score = self.cosine_similarity(query_vector, chunk)\n            scores.append((i, score))\n        \n        # 按分数降序排序\n        scores.sort(key=lambda x: x[1], reverse=True)\n        \n        # 返回 top_k 最相关的结果\n        return [self.vector_store.embeddings.__dict__['index'] if hasattr(self.vector_store.embeddings, '__dict__') else None for _ in range(0)] # 占位，逻辑修正如下\n\n        # 修正后的简单获取逻辑：\n        results = []\n        for i, score in scores[:self.top_k]:\n            # 这里我们需要重新访问原始文本，简单的做法是在 VectorStore 里存文本列表\n            # 为了简化本示例，我们假设 VectorStore 内部维护了 chunks 列表\n            pass \n        return results\n\n# 修正后的完整流程类\nclass MiniRAG:\n    def __init__(self, model_name='all-MiniLM-L6-v2', top_k=2):",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 3,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1577,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16068,
+  "ttft_ms": 139,
+  "decode_tok_s": 99.01,
+  "response": "这是一个使用 Python 实现的 RAG（检索增强生成）最小化原型。为了确保代码可运行且无需昂贵的 API 密钥，我们将使用以下开源栈：\n\n1.  **文档切分 (Chunking)**: `langchain.text_splitter` (逻辑最简单)\n2.  **Embedding (向量生成)**: `sentence-transformers` (本地运行，免费且效果好)\n3.  **检索 (Vector Search)**: `faiss-cpu` (Facebook AI 向量索引，极速且轻量)\n4.  **生成 (Generation)**: `transformers` (使用本地开源模型 Llama-3-8B 或 Phi-3，此处为演示方便，我们假设用户替换为自己的 API 或本地模型，代码中内置一个基于 `transformers` 的简单本地推理示例，或者模拟生成步骤)。\n\n### 前置准备\n\n请安装以下依赖库：\n\n```bash\npip install langchain sentence-transformers faiss-cpu torch transformers accelerate\n```\n\n### 完整代码实现\n\n这段代码包含四个核心步骤的完整闭环。你可以直接运行它。\n\n```python\nimport os\nimport numpy as np\nimport torch\nfrom typing import List, Tuple\n\n# 1. 文档切分与加载 (Chunking)\n# 使用 LangChain 的文本分割器\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\nfrom langchain.schema import Document\n\n# 2. 向量嵌入 (Embedding)\n# 使用 sentence-transformers (本地运行，无需 API Key)\nfrom sentence_transformers import SentenceTransformer\n\n# 3. 向量检索 (Retrieval)\n# 使用 FAISS (Facebook AI Similarity Search)\nimport faiss\n\n# 4. 生成 (Generation)\n# 使用 Hugging Face Transformers (本地运行)\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\n\nclass SimpleRAG:\n    def __init__(self):\n        # 初始化 Embedding 模型 (使用中文支持较好的模型)\n        # 首次运行会自动下载模型缓存到 ~/.cache\n        print(\"正在加载 Embedding 模型...\")\n        self.embed_model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')\n        \n        # 初始化 LLM 生成模型 (演示使用轻量级模型，实际生产可替换为 API)\n        # 注意：首次运行会下载模型，请确保网络通畅或已缓存\n        print(\"正在加载生成模型 (Philosopher/Phi-3-mini 等，此处选用较小模型演示)...\")\n        self.llm_model_name = \"microsoft/Phi-3-mini-4k-instruct\" # 或者本地小模型\n        self.tokenizer = AutoTokenizer.from_pretrained(self.llm_model_name)\n        self.llm = AutoModelForCausalLM.from_pretrained(\n            self.llm_model_name, \n            device_map=\"auto\", \n            torch_dtype=torch.float16 \n        )\n        \n        # 初始化 FAISS 索引\n        self.index = None\n        self.documents = []\n\n    def split_documents(self, raw_text: str) -> List[Document]:\n        \"\"\"步骤 1: 将长文本切分为小块\"\"\"\n        text_splitter = RecursiveCharacterTextSplitter(\n            chunk_size=300,  # 每个块的最大长度\n            chunk_overlap=50, # 重叠部分，防止切分破坏语义\n            length_function=len,\n        )\n        texts = text_splitter.split_text(raw_text)\n        documents = [Document(page_content=t) for t in texts]\n        return documents\n\n    def create_vector_index(self, documents: List[Document]):\n        \"\"\"步骤 2 & 3: 生成 Embedding 并构建 FAISS 索引\"\"\"\n        # 提取文档内容\n        contents = [doc.page_content for doc in documents]\n        \n        # 生成向量\n        # sentence-transformers 默认返回的是 384 维向量 (MiniLM)\n        embeddings = self.embed_model.encode(contents)\n        \n        # 归一化向量 (FAISS 余弦相似度需要)\n        d = embeddings.shape[1]\n        # 创建一个归一化后的索引\n        index = faiss.IndexFlatIP(d) # Inner Product 等同于 余弦相似度 (当向量归一化后)\n        \n        # 将向量归一化\n        faiss.normalize_L2(embeddings)\n        \n        # 将向量添加到索引\n        index.add(embeddings)\n        \n        self.index = index\n        self.documents = documents\n\n    def retrieve(self, query: str, top_k: int = 2) -> Tuple[List[Document], List[float]]:\n        \"\"\"步骤 3: 检索最相关的文档块",
+  "reasoning": null,
+  "memory_before_mb": 21156,
+  "memory_after_mb": 21156,
+  "is_warmup": false,
+  "round": 4,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 19456,
+      "cache_efficiency": 33.0,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}
