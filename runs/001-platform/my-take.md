@@ -61,7 +61,16 @@
 
 原因已明确：Ollama 对 Qwen3.5 走 MLX（有 nvfp4 量化版），对 Gemma4 走 llama.cpp（无 MLX 支持）。不是同一个引擎之间的对比。
 
-延伸问题：Ollama 的 MLX 加速是按架构逐个适配的，截至 2026.04 只有 Qwen3.5 系列提供了 [8 个 nvfp4 版本](https://ollama.com/library/qwen3.5/tags)。Gemma4 MLX 支持 [正在开发](https://github.com/ollama/ollama/pull/15244)（Draft PR #15244），但尚未合并。
+延伸问题：**Ollama 的 MLX 加速是按架构逐个实现的**，每个架构需要独立用 Go 实现 forward pass 并调用 MLX C++ bindings。证据：
+
+- 官方博客原话："We will **expand the list of supported architectures**."（[ollama.com/blog/mlx](https://ollama.com/blog/mlx)）
+- 源码结构：每个架构是独立的 Go 包（[`x/models/qwen3/`](https://github.com/ollama/ollama/tree/main/x/models/qwen3)、[`x/models/glm4_moe_lite/`](https://github.com/ollama/ollama/tree/main/x/models/glm4_moe_lite) 等），各自实现 Forward 方法
+- MLX runner 作为子进程运行（[`x/mlxrunner/`](https://github.com/ollama/ollama/tree/main/x/mlxrunner)），通过 HTTP 与主服务通信
+- Go bindings 封装 MLX C++ API（[DeepWiki 文档](https://deepwiki.com/ollama/ollama/5.7-mlx-runner-(apple-silicon))："The MLX runner uses a registry-based system to instantiate different transformer architectures"）
+
+截至 2026.04 只有 Qwen3.5 系列提供了 [8 个 nvfp4 版本](https://ollama.com/library/qwen3.5/tags)。Gemma4 MLX 支持 [正在开发](https://github.com/ollama/ollama/pull/15244)（Draft PR #15244），但尚未合并。
+
+这意味着 **Ollama MLX 加速的覆盖面受限于团队的实现进度**，而 oMLX 直接使用 Python MLX 生态，对 HuggingFace mlx-community 的模型即装即用。
 
 ## 两个平台的发展阶段不同
 
