@@ -31,7 +31,15 @@
 
 - A1→A3 prefill 增量：Ollama 1322ms、oMLX 1230ms、mlx-lm 1415ms（差距 <15%）
 - Qwen3.5 场景下 Ollama 走 MLX 引擎（0.19+ nvfp4），三个平台底层引擎相同
-- 绝对 TTFT 的差异来自各 backend 的固定启动开销，不是 prefill 吞吐本身
+- 绝对 TTFT 的差异主要来自各 backend 的固定启动开销：
+
+| Provider | A1 TTFT（≈固定开销） | A3-A1（≈纯 prefill） | 固定开销占比 |
+|----------|---------------------|---------------------|------------|
+| oMLX | **87ms** | 1230ms | 6.6% |
+| Ollama | 133ms | 1322ms | 9.2% |
+| mlx-lm | 204ms | 1415ms | 12.6% |
+
+- 固定开销差 2.3x（87 vs 204ms），纯 prefill 差 <15%——TTFT 排名由固定开销决定
 - 注意：这和结论 3 不矛盾——结论 3 是 Gemma4 上 MLX vs llama.cpp（不同引擎），本条是 Qwen3.5 上三个 MLX backend（同引擎）
 
 ### 5. 缓存是 benchmark 最大陷阱
