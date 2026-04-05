@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 136,
+  "tokens_generated": 116,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 2117,
+  "ttft_ms": 352,
+  "decode_tok_s": 65.71,
+  "response": "1. **智能客服问答**：系统自动检索最新的产品手册或工单记录，为客服机器人提供准确依据以实时解答用户关于具体政策或故障排查的疑问。\n2. **法律与合规辅助**：律师利用 RAG 快速从海量法律法规库和过往判例中检索相关条款，辅助生成严谨的法律意见书并规避引用过时法条的风险。\n3. **企业知识搜索平台**：员工通过自然语言提问直接从内部文档、技术规范和会议纪要中获取定制化答案，打破数据孤岛并大幅提升信息检索效率。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 5,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

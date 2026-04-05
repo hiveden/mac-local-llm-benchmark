@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1711,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16696,
+  "ttft_ms": 143,
+  "decode_tok_s": 103.37,
+  "response": "这是一个使用纯 Python 实现的 RAG（检索增强生成）最小化原型。为了演示方便，我们不依赖庞大的生产级框架（如 LangChain），而是使用 `sentence-transformers` 进行向量化，使用 `scikit-learn` 进行简单的余弦相似度计算（或手写逻辑），并模拟一个生成过程。\n\n### 核心步骤概览\n\n1.  **文档切分 (Chunking)**：将长文本按字符或单词数分割成小块。\n2.  **Embedding**：将文本块转换为高维向量。\n3.  **检索 (Retrieval)**：计算查询向量与知识库中向量的相似度，选出 Top-K。\n4.  **生成 (Generation)**：将检索到的上下文与用户问题拼接，模拟生成回答。\n\n### 前置准备\n\n你需要安装以下库：\n\n```bash\npip install sentence-transformers scikit-learn numpy\n```\n\n### 完整代码实现\n\n```python\nimport math\nimport os\nfrom typing import List, Tuple\nimport numpy as np\nfrom sentence_transformers import SentenceTransformer\n\n# 设置随机种子以保证可复现性\nnp.random.seed(42)\n\nclass SimpleRAG:\n    def __init__(self, chunk_size: int = 50):\n        \"\"\"\n        初始化 RAG 系统\n        :param chunk_size: 文档切分的大致字符数\n        \"\"\"\n        self.chunk_size = chunk_size\n        # 加载预训练 Embedding 模型 (这里使用小巧的 'all-MiniLM-L6-v2')\n        self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')\n        self.vector_store: List[Tuple[str, np.ndarray]] = []\n\n    def chunk_text(self, text: str) -> List[str]:\n        \"\"\"\n        简单的基于字符的文档切分\n        :param text: 原始文本\n        :return: 分块后的文本列表\n        \"\"\"\n        chunks = []\n        current_chunk = \"\"\n        \n        # 按行分割，避免破坏段落结构，然后按字符数切分\n        lines = text.split('\\n')\n        \n        for line in lines:\n            if len(current_chunk) + len(line) > self.chunk_size and current_chunk:\n                chunks.append(current_chunk.strip())\n                current_chunk = line\n            else:\n                if current_chunk:\n                    current_chunk += '\\n' + line\n                else:\n                    current_chunk = line\n        \n        if current_chunk:\n            chunks.append(current_chunk.strip())\n        \n        return chunks\n\n    def build_index(self, documents: List[str]):\n        \"\"\"\n        索引构建：切分文档并生成向量存入向量库\n        :param documents: 原始文档列表\n        \"\"\"\n        print(f\"[索引] 正在处理 {len(documents)} 个文档...\")\n        all_chunks = []\n        \n        for doc in documents:\n            chunks = self.chunk_text(doc)\n            all_chunks.extend(chunks)\n        \n        # 一次性生成所有 Embedding\n        embeddings = self.embedding_model.encode(all_chunks, show_progress_bar=True)\n        \n        # 将 (文本块, 向量) 存入内存列表\n        self.vector_store = list(zip(all_chunks, embeddings))\n        print(f\"[索引] 已建立包含 {len(self.vector_store)} 个分块的知识库。\")\n\n    def retrieve(self, query: str, top_k: int = 3) -> List[str]:\n        \"\"\"\n        检索步骤：计算查询向量与知识库的余弦相似度\n        :param query: 用户查询\n        :param top_k: 返回最相关的 Top K 个结果\n        :return: 返回的文本块列表\n        \"\"\"\n        # 生成查询向量\n        query_embedding = self.embedding_model.encode([query])[0]\n        \n        # 计算余弦相似度 (使用 sklearn 的 cosine_similarity 更简单，这里手写展示逻辑)\n        similarities = []\n        for i, (text, vector) in enumerate(self.vector_store):\n            # 向量归一化计算余弦相似度：dot(A_norm, B_norm)\n            norm_dot = np.dot(query_embedding, vector)\n            norm_query = np.linalg.norm(query_embedding)\n            norm_vec = np.linalg.norm(vector)\n            \n            if norm_query == 0 or norm_vec == 0:\n                sim = 0\n            else:\n                sim = norm_dot / (norm_query * norm_vec)\n            \n            similarities.append((sim, text))\n        \n        # 按相似度排序\n        similarities.sort(key=lambda x: x[0], reverse=True)\n        \n        # 返回 Top K 文本\n        return [text for sim, text in similarities[:top_k]]\n\n    def",
+  "reasoning": null,
+  "memory_before_mb": 21079,
+  "memory_after_mb": 21078,
+  "is_warmup": false,
+  "round": 3,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 9216,
+      "cache_efficiency": 32.7,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1882,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16480,
+  "ttft_ms": 141,
+  "decode_tok_s": 115.18,
+  "response": "这是一个使用 Python 编写的 RAG（检索增强生成）最小化实现示例。为了保持代码的简洁和可运行性，我们将使用以下轻量级方案：\n\n*   **文档切分**：使用简单的字符串分割。\n*   **Embedding 模型**：使用 `sentence-transformers` 库中的轻量级模型（本地运行，无需 API Key）。\n*   **向量检索**：使用 `scikit-learn` 的 `NearestNeighbors` 进行简单的余弦相似度计算。\n*   **生成**：使用一个模拟的 LLM 生成函数（实际场景中可替换为调用 LLM API）。\n\n### 前置准备\n\n你需要安装以下库：\n\n```bash\npip install sentence-transformers scikit-learn\n```\n\n### Python 代码实现\n\n```python\nimport re\nfrom typing import List, Tuple\nfrom sentence_transformers import SentenceTransformer\nfrom sklearn.neighbors import NearestNeighbors\nimport numpy as np\n\nclass SimpleRAG:\n    def __init__(self, model_name='all-MiniLM-L6-v2'):\n        \"\"\"\n        初始化 RAG 系统\n        :param model_name: 用于生成 Embedding 的模型名称\n        \"\"\"\n        self.model = SentenceTransformer(model_name)\n        self.documents = []      # 存储原始文本片段\n        self.embeddings = []     # 存储 Embedding 向量\n        self.vector_retriever = None\n\n    def chunk_text(self, text: str, chunk_size: int = 200) -> List[str]:\n        \"\"\"\n        步骤 1: 文档切分 (Text Splitting)\n        简单按字符数切分，实际项目中通常按段落或语义切分。\n        \"\"\"\n        # 按句号、问号、感叹号分句\n        sentences = re.split(r'[.!?]+', text)\n        sentences = [s.strip() for s in sentences if s.strip()]\n        \n        chunks = []\n        current_chunk = []\n        current_length = 0\n\n        for sentence in sentences:\n            # 如果单句超过 chunk_size，强制切分（简单处理）\n            if len(sentence) > chunk_size:\n                words = sentence.split()\n                temp_chunk = []\n                temp_len = 0\n                for word in words:\n                    if temp_len + len(word) + 1 <= chunk_size:\n                        temp_chunk.append(word)\n                        temp_len += len(word) + 1\n                    else:\n                        chunks.append(\" \".join(temp_chunk))\n                        temp_chunk = [word]\n                        temp_len = len(word) + 1\n                if temp_chunk:\n                    chunks.append(\" \".join(temp_chunk))\n                current_chunk = []\n                current_length = 0\n                continue\n\n            # 累积句子\n            if current_length + len(sentence) <= chunk_size:\n                current_chunk.append(sentence)\n                current_length += len(sentence)\n            else:\n                chunks.append(\" \".join(current_chunk))\n                current_chunk = [sentence]\n                current_length = len(sentence)\n        \n        if current_chunk:\n            chunks.append(\" \".join(current_chunk))\n        \n        return chunks\n\n    def embed_documents(self, chunks: List[str]):\n        \"\"\"\n        步骤 2: 生成 Embedding\n        将文本列表转换为向量列表。\n        \"\"\"\n        embeddings = self.model.encode(chunks, convert_to_numpy=True)\n        self.documents = chunks\n        self.embeddings = embeddings\n        \n        # 初始化最近邻检索器 (用于 k 近邻搜索)\n        # metric='cosine' 表示使用余弦相似度\n        self.vector_retriever = NearestNeighbors(n_neighbors=1, metric='cosine')\n        self.vector_retriever.fit(embeddings)\n\n    def add_document(self, text: str):\n        \"\"\"\n        添加新文档到知识库：切分 -> Embedding -> 检索器更新\n        \"\"\"\n        chunks = self.chunk_text(text)\n        if self.documents:\n            # 如果已有数据，需要合并旧的和新的\n            new_embeddings = self.model.encode(chunks, convert_to_numpy=True)\n            self.documents.extend(chunks)\n            self.embeddings = np.vstack([self.embeddings, new_embeddings])\n            \n            # 重新训练检索器\n            self.vector_retriever = NearestNeighbors(n_neighbors=1, metric='cosine')\n            self.vector_retriever.fit(self.embeddings)\n        else:\n            # 第一次初始化\n            self.embed_documents(chunks)\n\n    def retrieve(self, query: str, top_k: int = 3) -> List[str]:\n        \"\"\"\n        步骤 3: 向量检索\n        查询向量，找到最相似的前 k 个文本块",
+  "reasoning": null,
+  "memory_before_mb": 21143,
+  "memory_after_mb": 21143,
+  "is_warmup": false,
+  "round": 6,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 9216,
+      "cache_efficiency": 32.5,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

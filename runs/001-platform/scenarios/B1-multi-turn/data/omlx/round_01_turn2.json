@@ -1,0 +1,53 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 114,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 2307,
+  "ttft_ms": 349,
+  "decode_tok_s": 58.23,
+  "response": "1. **智能企业知识库助手**：利用 RAG 实时检索内部文档、制度规范和历史案例，为客服或员工提供基于事实的精准问答，避免大模型产生错误信息。\n2. **动态行业情报分析**：通过检索最新的行业新闻、竞品报告和市场数据，帮助分析师快速生成带有最新数据支撑的市场洞察报告，解决模型训练数据滞后的问题。\n3. **个性化合规审查**：在合同审核场景中，自动检索并比对法律法规库及公司内部合规标准，生成包含具体条款依据的审查意见，确保业务操作符合最新监管要求。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 13083,
+  "memory_after_mb": 13084,
+  "is_warmup": true,
+  "round": 1,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 9216,
+      "cache_efficiency": 22.6,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 2,
+            "partial_tokens_skipped": 147,
+            "last_partial_tokens_skipped": 129,
+            "last_tokens_to_next_block": 1919,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

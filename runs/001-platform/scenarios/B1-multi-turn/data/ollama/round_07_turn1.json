@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 20,
+  "tokens_generated": 108,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 1777,
+  "ttft_ms": 134,
+  "decode_tok_s": 65.71,
+  "response": "检索增强生成（RAG）通过整合外部知识库与大型语言模型，将传统的“仅凭训练数据记忆”转变为“动态查询 + 实时推理”模式：当用户发起提问时，系统首先利用向量搜索等技术从预设的外部数据库中提取最相关的上下文片段，随后将这些补充信息作为提示词的一部分“注入”到大模型中，引导模型基于最新的参考资料而非 solely 依赖其静态训练参数生成精准、可溯源且事实准确的回答，从而有效缓解了模型幻觉并提升了特定领域的专业度。",
+  "reasoning": null,
+  "turn": 1,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 7,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

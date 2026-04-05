@@ -1,0 +1,53 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 95,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 1644,
+  "ttft_ms": 88,
+  "decode_tok_s": 61.04,
+  "response": "RAG（检索增强生成）的工作流程首先是将用户的查询与外部知识库中的海量文档进行语义匹配，通过检索引擎精准提取最相关的片段信息；随后，系统将这些检索到的上下文信息与原始问题共同构建为一个增强后的提示词（Prompt），输入到大语言模型中；最后，模型基于这些具体的事实依据进行推理和生成，从而输出既准确又符合当前知识背景的回答，有效解决了大模型常见的事实幻觉问题并实现了动态知识更新。",
+  "reasoning": null,
+  "turn": 1,
+  "memory_before_mb": 21170,
+  "memory_after_mb": 21170,
+  "is_warmup": false,
+  "round": 6,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 9216,
+      "cache_efficiency": 22.1,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

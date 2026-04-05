@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1597,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16602,
+  "ttft_ms": 140,
+  "decode_tok_s": 97.01,
+  "response": "这是一个使用纯 Python 编写的 RAG（检索增强生成）最小实现示例。\n\n为了演示清晰且无需配置庞大的外部环境，本示例将使用：\n1.  **`random`** 模拟文档分块（Chunking）。\n2.  **`sklearn`** 库中的 `TfidfVectorizer` 模拟 Embedding（文本向量化），避免了加载大型本地模型，适合快速验证逻辑。\n3.  **`scikit-learn`** 的余弦相似度进行简单的向量检索。\n4.  **简单的字符串拼接** 模拟大模型生成（你可以轻松替换为真实的 LLM 调用）。\n\n### 前置准备\n\n你需要安装 `scikit-learn` 来处理文本向量化：\n```bash\npip install scikit-learn\n```\n\n### 代码实现\n\n```python\nimport re\nimport random\nimport numpy as np\nfrom typing import List, Tuple, Dict\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.metrics.pairwise import cosine_similarity\n\nclass SimpleRAG:\n    def __init__(self):\n        self.vectorizer = TfidfVectorizer()\n        self.chunks = []\n        self.embeddings = None\n        self.chunk_sources = []\n\n    def chunk_documents(self, documents: List[str]) -> List[str]:\n        \"\"\"\n        步骤 1: 文档切分 (Chunking)\n        简单的按字符数分割，或者按句子分割。\n        这里为了演示，按每 50 个字符切分。\n        \"\"\"\n        chunks = []\n        for doc in documents:\n            # 简单处理：按句号分割句子，再按长度切分，这里简化为直接按长度切分\n            # 实际生产中通常使用 LangChain 或 LlamaIndex 的文本分割器\n            text = re.sub(r'\\s+', ' ', doc).strip()\n            if len(text) > 50:\n                # 简单的按字符切分逻辑\n                start = 0\n                while start < len(text):\n                    chunk = text[start:start+50]\n                    if len(chunk) > 0:\n                        chunks.append(chunk)\n                    start += 40  # 允许重叠\n            else:\n                chunks.append(text)\n        return chunks\n\n    def create_embeddings(self, chunks: List[str]):\n        \"\"\"\n        步骤 2: Embedding (向量化)\n        使用 TF-IDF 模拟向量生成。\n        实际生产中应使用 Sentence-Transformers 或调用 HuggingFace API。\n        \"\"\"\n        # 拟合向量器\n        self.vectorizer.fit(chunks)\n        \n        # 生成矩阵 (每个文档块变成一个向量)\n        self.embeddings = self.vectorizer.transform(chunks).toarray()\n        \n        # 记录原始块内容，用于后续检索结果展示\n        self.chunk_sources = chunks\n\n    def retrieve(self, query: str, top_k: int = 3) -> List[Tuple[str, float]]:\n        \"\"\"\n        步骤 3: 检索 (Retrieval)\n        计算查询向量与知识库向量的余弦相似度，返回 Top-K 结果。\n        \"\"\"\n        # 将查询向量化 (使用已拟合的 vectorizer)\n        query_vec = self.vectorizer.transform([query]).toarray()\n        \n        # 计算余弦相似度\n        similarities = cosine_similarity(query_vec, self.embeddings)[0]\n        \n        # 获取相似度最高的索引\n        top_indices = np.argsort(similarities)[::-1][:top_k]\n        \n        # 构建结果列表：(原始文本块，相似度分数)\n        results = []\n        for idx in top_indices:\n            results.append((self.chunk_sources[idx], float(similarities[idx])))\n        \n        return results\n\n    def generate(self, query: str, retrieved_docs: List[str]) -> str:\n        \"\"\"\n        步骤 4: 生成 (Generation)\n        将检索到的上下文和查询结合，模拟大模型的回复。\n        实际场景中这里应调用 LLM API (如 OpenAI, Llama 3 等)。\n        \"\"\"\n        if not retrieved_docs:\n            return \"未检索到相关上下文，无法回答。\"\n\n        # 构建 Prompt\n        context = \"\\n\".join([f\"文档 {i+1}: {doc}\" for i, doc in enumerate(retrieved_docs)])\n        prompt = f\"\"\"\n        你是一个问答助手。请基于以下检索到的上下文回答用户的问题。\n        \n        上下文：\n        {context}\n        \n        用户问题：{query}\n        \n        回答：\n        \"\"\"\n        \n        # 模拟生成：实际这里应该调用 model.generate(prompt)\n",
+  "reasoning": null,
+  "memory_before_mb": 12108,
+  "memory_after_mb": 12108,
+  "is_warmup": true,
+  "round": 1,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 9216,
+      "cache_efficiency": 32.8,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

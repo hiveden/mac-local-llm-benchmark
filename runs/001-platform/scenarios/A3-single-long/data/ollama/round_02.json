@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 1189,
+  "tokens_generated": 107,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 3214,
+  "ttft_ms": 1543,
+  "decode_tok_s": 64.02,
+  "response": "Transformer 摒弃 RNN，基于自注意力机制解决并行计算与长距离依赖难题。其核心通过 Q、K、V 线性变换计算注意力分数；多头机制增强表达能力；正弦位置编码注入顺序信息；前馈网络配合残差连接与归一化保障深层训练稳定。解码器采用因果掩码确保自回归特性。结合 AdamW 优化及多项并行策略，该架构凭借简洁设计支撑了从编码器到 Decoder-only 大模型的规模化发展，成为现代 AI 基石。",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 2,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

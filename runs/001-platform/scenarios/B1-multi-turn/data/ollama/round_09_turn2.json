@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 155,
+  "tokens_generated": 105,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 1948,
+  "ttft_ms": 350,
+  "decode_tok_s": 65.69,
+  "response": "1. **智能客服问答**：系统自动检索企业内部最新的规章制度或产品手册，辅助客服机器人生成准确且符合最新政策的回复，有效减少人工培训成本。  \n2. **企业知识资产管理**：通过汇聚文档、会议记录等非结构化数据，让员工能够以自然语言快速查询到跨部门的历史项目细节或技术解决方案。  \n3. **行业研报与市场分析**：实时抓取并整合外部新闻资讯、竞品动态及法规文件，协助分析师在短时间内生成基于最新事实的行业洞察报告。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 9,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

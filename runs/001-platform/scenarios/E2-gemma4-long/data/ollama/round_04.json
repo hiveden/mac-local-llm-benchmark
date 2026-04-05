@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "gemma4:26b",
+  "prompt_tokens": 1258,
+  "tokens_generated": 164,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 6696,
+  "ttft_ms": 2653,
+  "decode_tok_s": 40.56,
+  "response": "这篇文章介绍了 Transformer 架构及其演进。其核心在于通过**自注意力机制**取代了 RNN 的循环结构，解决了并行化难题与长距离依赖问题。通过 **Q/K/V 线性变换**与**缩放点积**计算注意力，并利用**多头机制**增强不同子空间的表达能力。\n\n为弥补位置信息的缺失，引入了**位置编码**。架构上结合了**前馈网络**、**残差连接**与**层归一化**，现代实践多采用 Pre-LN 与 SwiGLU。此外，**Decoder-only 架构**与**因果掩码**是现代大模型的主流。其设计的高效性与可扩展性使其成为大模型的基础。",
+  "reasoning": null,
+  "memory_before_mb": 23552,
+  "memory_after_mb": 23552,
+  "is_warmup": false,
+  "round": 4,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

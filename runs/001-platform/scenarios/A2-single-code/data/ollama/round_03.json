@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 16018,
+  "ttft_ms": 216,
+  "decode_tok_s": 64.8,
+  "response": "这是一个使用 Python 实现的**RAG（Retrieval-Augmented Generation）最小化原型**。为了保持代码的简洁和可运行性（无需复杂的配置），我们将使用以下库：\n\n*   `sentence-transformers`：用于本地 Embedding（向量化）。\n*   `faiss` (或简单的矩阵运算)：为了演示方便，本示例不使用外部依赖的向量数据库（如 Chroma/Pinecone），而是直接使用 Python 列表和矩阵相似度计算来模拟检索。\n*   `transformers` + `torch`：用于本地运行一个小型生成模型（这里选用 `sentence-transformers` 自带的 `all-MiniLM-L6-v2` 同时也具备简单的生成功能，或者为了极简，我们将**模拟**生成步骤，因为真实的 LLM 推理需要巨大的显存和依赖）。\n\n> **注意**：为了让代码在普通 CPU/GPU 环境上一键运行且不依赖庞大的模型文件下载（如 `text-generation-inference`），本示例将**使用本地嵌入模型 + 模拟回答生成**。如果你需要真实的问答，只需将最后一步替换为调用 API 或本地 LLM。\n\n### 1. 安装依赖\n\n```bash\npip install torch sentence-transformers\n```\n*(注：faiss-cpu 是可选的，为了极简这里直接用 numpy/矩阵运算)*\n\n### 2. 代码实现\n\n```python\nimport re\nfrom typing import List, Tuple\nfrom sklearn.metrics.pairwise import cosine_similarity\nimport numpy as np\nfrom sentence_transformers import SentenceTransformer\n\nclass SimpleRAG:\n    def __init__(self):\n        print(\"正在加载 Embedding 模型 (all-MiniLM-L6-v2)...\")\n        self.model = SentenceTransformer('all-MiniLM-L6-v2')\n        self.chunks = []       # 存储原始文本块\n        self.vectors = []      # 存储对应的向量列表\n\n    def split_docs(self, document_text: str) -> List[str]:\n        \"\"\"\n        步骤 1: 文档切分 (Chunking)\n        简单策略：按句号/换行符切分，并过滤空字符串。\n        \"\"\"\n        # 这里使用简单的正则按标点符号分割\n        sentences = re.split(r'[.!?]+', document_text)\n        chunks = [s.strip() for s in sentences if s.strip()]\n        \n        # 如果句子太长（简单截断，实际项目中会结合 Token 限制）\n        max_len = 60 \n        final_chunks = []\n        for chunk in chunks:\n            if len(chunk.split()) > max_len:\n                final_chunks.extend([chunk[i:i+max_len] for i in range(0, len(chunk), max_len)])\n            else:\n                final_chunks.append(chunk)\n                \n        return final_chunks\n\n    def embed_docs(self, texts: List[str]) -> Tuple[List[str], List[np.ndarray]]:\n        \"\"\"\n        步骤 2: Embedding (向量化)\n        将文本列表转换为向量矩阵。\n        \"\"\"\n        if not texts:\n            return [], []\n            \n        vectors = self.model.encode(texts, show_progress_bar=False)\n        # 转为 list 以便后续存储\n        vector_list = [v for v in vectors]\n        return texts, vector_list\n\n    def retrieve(self, query: str, top_k: int = 2) -> List[str]:\n        \"\"\"\n        步骤 3: 检索 (Vector Search)\n        计算 Query 与所有文档块的余弦相似度，返回最相关的 top_k 个。\n        \"\"\"\n        if not self.vectors:\n            print(\"知识库为空，无法检索。\")\n            return []\n\n        # 1. 将查询向量化\n        query_vec = self.model.encode([query], show_progress_bar=False)[0]\n        \n        # 2. 计算相似度 (余弦相似度)\n        # sklearn 的 cosine_similarity 输入是 (n_samples, n_features)\n        similarities = cosine_similarity([query_vec], np.array(self.vectors))[0]\n        \n        # 3. 获取 top_k 索引\n        indices = similarity_indices = np.argsort(similarities)[::-1][:top_k]\n        \n        # 4. 返回文本内容\n        results = [self.chunks[i] for i in indices if similarities[i] > 0]\n        return results\n\n    def generate_answer(self, query: str, context: List[str]) -> str:\n        \"\"\"\n        步骤 4: 生成 (Generation)\n        模拟 RAG 的生成逻辑：将 Context 拼接到 Prompt 中。\n        \n        注意：为了无需安装庞大的 Transformers 依赖和下载大模型，\n        这里演示了“模板式",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 3,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

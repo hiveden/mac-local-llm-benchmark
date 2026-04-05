@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1499,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16528,
+  "ttft_ms": 140,
+  "decode_tok_s": 91.47,
+  "response": "这是一个基于 Python 的 RAG（检索增强生成）最小实现。为了保持代码的纯 Python 特性且无需复杂的部署环境，本示例将使用：\n\n1.  **LangChain (社区版)**：处理文档切分和编排流程（`LangChain` 的 `TextSplitter` 和 `VectorStore`）。\n2.  **Hugging Face Transformers**：用于本地运行 Embedding 模型（无需 API Key，免费）。\n3.  **本地 Embedding 模型**：使用轻量级的 `all-MiniLM-L6-v2`，速度快且效果足够演示。\n4.  **模拟生成**：由于本地 LLM 运行需要极大显存，本示例使用简单的“关键词匹配 + 上下文重组”来模拟生成过程。*（注：在真实生产环境中，你会将生成部分替换为调用 LLM API 或本地加载 LLM 模型）。*\n\n### 前置准备\n\n你需要安装以下库：\n\n```bash\npip install langchain langchain-community huggingface-hub sentence-transformers\n```\n\n### 完整代码实现\n\n```python\nimport re\nfrom typing import List, Tuple\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\nfrom langchain_community.embeddings import HuggingFaceEmbeddings\nfrom langchain_community.vectorstores import FAISS\n\n# 注意：在真实项目中，如果数据量不大，FAISS 可以直接存到本地文件。\n# 这里演示直接内存操作。\n\nclass SimpleRAG:\n    def __init__(self, embedding_model_name: str = \"sentence-transformers/all-MiniLM-L6-v2\"):\n        \"\"\"\n        初始化 RAG 系统\n        \"\"\"\n        print(f\"[步骤 1] 正在加载 Embedding 模型: {embedding_model_name} ...\")\n        self.embeddings = HuggingFaceEmbeddings(model_name=embedding_model_name)\n        self.vector_store = None\n\n    def step_split(self, documents: List[str]) -> List[str]:\n        \"\"\"\n        步骤 1: 文档切分 (Document Splitting)\n        将长文档切分为小的 chunk 以便处理。\n        \"\"\"\n        print(\"[步骤 2] 正在进行文档切分...\")\n        splitter = RecursiveCharacterTextSplitter(\n            chunk_size=200,  # 每个 chunk 的字符数\n            chunk_overlap=50, # 重叠部分，防止语义切断\n            length_function=len,\n        )\n        chunks = splitter.split_documents(documents)\n        # 返回纯文本列表，不带元数据以简化演示\n        return [chunk.page_content for chunk in chunks]\n\n    def step_index(self, chunks: List[str]):\n        \"\"\"\n        步骤 2: Embedding 与 向量化 (Embedding & Indexing)\n        将文本转化为向量并存入向量数据库。\n        \"\"\"\n        print(\"[步骤 3] 正在生成 Embedding 并构建索引...\")\n        # 创建向量库并传入 chunks\n        # FAISS 会自动调用 self.embeddings 进行向量化\n        self.vector_store = FAISS.from_texts(chunks, self.embeddings)\n        print(f\"索引构建完成，包含 {len(chunks)} 个文档片段。\")\n\n    def step_retrieve(self, query: str, k: int = 2):\n        \"\"\"\n        步骤 3: 检索 (Retrieval)\n        将用户查询向量化，并在向量库中查找最相似的 k 个片段。\n        \"\"\"\n        print(f\"[步骤 4] 正在检索查询: '{query}' ...\")\n        if self.vector_store is None:\n            raise ValueError(\"向量库尚未构建，请先执行 index 步骤。\")\n        \n        # similarity_search 会先对 query 做 embedding，再计算余弦相似度\n        docs = self.vector_store.similarity_search(query, k=k)\n        return [doc.page_content for doc in docs]\n\n    def step_generate(self, query: str, context: List[str]) -> str:\n        \"\"\"\n        步骤 4: 生成 (Generation)\n        在最小实现中，我们用规则生成简单的回答。\n        真实场景中，这里会调用 LLM (如 ChatGPT, Llama3 等) 进行回答。\n        \"\"\"\n        print(f\"[步骤 5] 正在生成回答...\")\n        \n        if not context:\n            return \"未在知识库中找到相关信息。\"\n\n        # 模拟 LLM 的逻辑：将查询和上下文拼接，生成回答\n        # 实际场景中，这里会是: llm.generate(prompt)\n        context_str = \"\\n\\n\".join(context)\n        \n        # 一个简单的伪生成逻辑（模拟）\n        answer = f\"",
+  "reasoning": null,
+  "memory_before_mb": 21251,
+  "memory_after_mb": 21251,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 9216,
+      "cache_efficiency": 32.2,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

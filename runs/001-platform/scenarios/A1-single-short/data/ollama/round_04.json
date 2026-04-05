@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 20,
+  "tokens_generated": 95,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 1595,
+  "ttft_ms": 151,
+  "decode_tok_s": 65.81,
+  "response": "RAG（检索增强生成）的工作原理是作为大语言模型与外部知识库的桥梁，当用户提出问题时，系统首先会利用检索引擎在预先构建的外部数据库或文档中查找相关信息片段，随后将这些高相关度的上下文数据“注入”到大模型的提示词（Prompt）中，使模型能够基于最新的、特定的事实依据而非仅依赖其训练时的内部记忆进行推理和回答，从而有效减少幻觉问题并显著提升输出的准确性与时效性。",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 4,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 16047,
+  "ttft_ms": 215,
+  "decode_tok_s": 64.68,
+  "response": "这是一个基于 Python 的 **RAG (Retrieval-Augmented Generation)** 最小化实现示例。为了保持代码简洁且可运行（无需额外下载庞大的本地模型），本示例将使用 `sentence-transformers` 库进行嵌入（Embedding）和向量化，并模拟一个简单的生成过程。\n\n### 前置准备\n\n你需要安装以下依赖：\n```bash\npip install sentence-transformers torch transformers\n```\n\n> **注意**：在真实生产环境中，\"文档切分\"通常使用 `langchain` 或 `unstructured`，\"检索\"使用 `FAISS` 或 `ChromaDB`。本示例为了最小化依赖，将手动实现切分和简单的字典检索逻辑。\n\n### 代码实现\n\n```python\nimport re\nfrom typing import List, Dict, Any\nimport numpy as np\n\n# 引入用于嵌入的模型 (自动下载并缓存)\nfrom sentence_transformers import SentenceTransformer\n\nclass SimpleRAG:\n    def __init__(self):\n        # 1. Embedding: 加载轻量级中文/英文通用嵌入模型\n        print(\"正在加载 Embedding 模型...\")\n        self.model = SentenceTransformer('all-MiniLM-L6-v2') # 轻量级，速度快\n        \n    def split_text(self, text: str) -> List[str]:\n        \"\"\"\n        2. 文档切分 (Text Splitting): \n        简单按句号分割，实际生产中需使用更复杂的策略（如基于 Token 长度或语义块）\n        \"\"\"\n        # 简单的按标点分割，过滤空行\n        sentences = re.split(r'[.!.!？!?](?=\\s|\\n|$)', text)\n        return [s.strip() for s in sentences if len(s.strip()) > 10]\n\n    def generate_embeddings(self, chunks: List[str]) -> List[np.ndarray]:\n        \"\"\"\n        将文本块转换为向量列表\n        \"\"\"\n        if not chunks:\n            return []\n        return self.model.encode(chunks).tolist()\n\n    def retrieve(self, query: str, chunks: List[str], embeddings: List[List[float]], top_k: int = 2) -> Dict[str, Any]:\n        \"\"\"\n        3. 向量检索 (Retrieval): \n        计算查询向量和文档库的余弦相似度，返回 Top-K 最相关文档。\n        \"\"\"\n        query_embedding = np.array(self.model.encode([query])[0])\n        \n        # 计算余弦相似度 (简化版，手动实现矩阵运算)\n        # 公式: cos_sim = (A . B) / (||A|| * ||B||)\n        norms_embeddings = [np.linalg.norm(e) for e in embeddings]\n        norms_query = np.linalg.norm(query_embedding)\n        \n        similarities = []\n        for i, emb in enumerate(embeddings):\n            dot_product = np.dot(emb, query_embedding)\n            # 防止除以0\n            norm = norms_embeddings[i] * norms_query if norms_query > 0 and norms_embeddings[i] > 0 else 1e-9\n            sim = dot_product / norm\n            similarities.append((sim, chunks[i]))\n\n        # 按相似度降序排序\n        similarities.sort(key=lambda x: x[0], reverse=True)\n        \n        return {\n            \"query\": query,\n            \"retrieved_docs\": similarities[:top_k] if similarities else []\n        }\n\n    def generate_response(self, query: str, context_docs: List[tuple]) -> str:\n        \"\"\"\n        4. 生成 (Generation): \n        最小化实现：根据检索到的上下文构造提示词。\n        在实际应用中，这里会调用 LLM API (如 ChatGPT, Llama3) 进行真实推理。\n        \"\"\"\n        if not context_docs:\n            return \"未找到相关上下文信息。\"\n\n        # 提取文档内容\n        docs_content = [doc[1] for doc in context_docs]\n        \n        # 构造 Prompt (模拟 LLM 的输入格式)\n        prompt = f\"\"\"\n你是一个智能助手。请根据以下背景知识回答用户的问题，如果背景知识不包含答案，请说明不知道。\n\n背景知识:\n{chr(10).join(docs_content)}\n\n问题: {query}\n\n回答:\n        \"\"\".strip()\n\n        # 模拟生成：这里直接返回构造好的 Prompt 给 LLM。\n        # 在真实场景中，你应该调用 llm.generate(prompt)\n        return f\"[模拟生成响应]\\n提示词已构建:\\n{prompt}\"\n\n    def run(self, user_query: str, documents: str) -> Dict[str, Any]:\n        \"\"\"\n        主流程：整合所有步骤\n        \"\"\"\n        print(f\"\\",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

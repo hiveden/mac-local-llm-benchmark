@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 166,
+  "tokens_generated": 118,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 2170,
+  "ttft_ms": 357,
+  "decode_tok_s": 65.11,
+  "response": "1. **智能客服系统**：通过实时检索最新的产品手册和常见问题库，让 AI 能够准确回答客户关于特定条款或新功能的疑问，避免生成过时信息。\n2. **企业知识助手**：允许员工快速从海量的内部文档（如项目报告、技术规范和规章制度）中检索精准答案，并自动总结关键要点以辅助决策。\n3. **法律与合规审查**：在分析合同或法规草案时，系统能即时调用最新的法律法规库和过往案例库，为专业条款的解读提供确凿的依据支持。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": true,
+  "round": 1,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

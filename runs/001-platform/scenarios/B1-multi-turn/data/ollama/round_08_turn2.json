@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 167,
+  "tokens_generated": 102,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 1918,
+  "ttft_ms": 360,
+  "decode_tok_s": 65.47,
+  "response": "1. **智能客服问答**：通过检索企业内部知识库，让机器人精准回答客户关于产品参数、故障处理等复杂问题，避免传统大模型“胡编乱造”。\n2. **企业研报分析**：在海量内部文档中快速定位关键数据与合规条款，辅助分析师生成包含确切引用的行业趋势报告。\n3. **法律合同审核**：基于最新的法律法规库和过往判例，自动识别合同风险点并提供符合当前法律框架的修改建议。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 8,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

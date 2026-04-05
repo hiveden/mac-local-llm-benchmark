@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 1189,
+  "tokens_generated": 125,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 3454,
+  "ttft_ms": 1508,
+  "decode_tok_s": 64.24,
+  "response": "Transformer 凭借自注意力机制彻底摒弃循环结构，解决 RNN 的并行化难与长依赖问题。其核心包括：通过 Q、K、V 线性变换及缩放计算实现全局关系建模；利用多头注意力捕获不同子空间信息；采用正弦余弦或旋转位置编码注入位置信号；结合前馈网络与残差连接保障深层训练稳定。架构上，解码器引入因果掩码实现自回归生成，现代模型多采用 decoder-only 设计。配合 AdamW 优化及先进并行策略，Transformer 展现出强大的扩展性，成为现代 AI 的基础。",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 6,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

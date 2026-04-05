@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 20,
+  "tokens_generated": 113,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 1877,
+  "ttft_ms": 149,
+  "decode_tok_s": 65.42,
+  "response": "RAG（检索增强生成）通过将大语言模型与外部知识库相结合来解决幻觉问题并提升回答准确性，其核心流程是：当用户提出问题后，系统首先利用向量搜索等技术从庞大的私有或公开数据集中检索出最相关的上下文片段；随后，将这些检索到的真实信息作为“背景知识”连同原始问题一起填入模型的提示词中，引导模型基于这些具体事实而非仅凭内部训练数据进行推理和生成；最终输出一个既具备大模型语言能力，又严格受限于最新、最相关事实的高精度回答。",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 2,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

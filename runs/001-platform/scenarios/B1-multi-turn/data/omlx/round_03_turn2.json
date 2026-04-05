@@ -1,0 +1,53 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 88,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 1888,
+  "ttft_ms": 330,
+  "decode_tok_s": 56.46,
+  "response": "1. 企业知识库问答：利用 RAG 让员工通过自然语言快速从海量内部文档、制度手册中检索精准答案，取代传统关键词搜索。\n2. 智能客户服务：让客服系统实时检索最新的产品手册与订单记录，生成准确且个性化的回复，显著降低人工处理成本。\n3. 数据分析辅助：将结构化数据库或非结构化报告中的最新数据检索并注入对话，协助业务人员直接获取基于事实的动态分析结论。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21102,
+  "memory_after_mb": 21102,
+  "is_warmup": false,
+  "round": 3,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 9216,
+      "cache_efficiency": 22.4,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 2,
+            "partial_tokens_skipped": 149,
+            "last_partial_tokens_skipped": 131,
+            "last_tokens_to_next_block": 1917,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

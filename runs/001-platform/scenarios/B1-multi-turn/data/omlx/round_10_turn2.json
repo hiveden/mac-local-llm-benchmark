@@ -1,0 +1,53 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 99,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 2214,
+  "ttft_ms": 328,
+  "decode_tok_s": 52.51,
+  "response": "1. 企业智能客服：通过接入产品手册和过往工单库，让 AI 客服能精准回答用户关于复杂故障排除或最新政策的询问，避免编造错误信息。\n2. 内部知识库问答：员工只需输入问题，系统即刻从海量公司文档、技术规范和会议纪要中检索并整合出定制化答案，大幅缩短信息检索时间。\n3. 合同与合规审查：在法律文书处理中，RAG 能自动对照最新法律法规及公司内控政策，快速识别合同条款中的潜在风险点并提供修改建议。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21270,
+  "memory_after_mb": 21270,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 9216,
+      "cache_efficiency": 21.7,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 2,
+            "partial_tokens_skipped": 153,
+            "last_partial_tokens_skipped": 135,
+            "last_tokens_to_next_block": 1913,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1593,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16695,
+  "ttft_ms": 143,
+  "decode_tok_s": 96.24,
+  "response": "这是一个使用 Python 实现的 **RAG (Retrieval-Augmented Generation)** 向量检索最小实现方案。\n\n为了保证代码的可运行性和最小依赖，本示例将使用：\n1.  **langchain** 库（处理文档切分和逻辑编排）。\n2.  **chromadb** 库（本地向量数据库，无需配置后端）。\n3.  **sentence-transformers** 库（开源的本地 Embedding 模型，替代昂贵的 API）。\n4.  **transformers** 库（本地轻量级 LLM 进行生成，替代 API）。\n\n### 前置准备\n\n请确保安装以下库：\n```bash\npip install langchain chromadb sentence-transformers transformers torch accelerate\n```\n\n### 完整代码实现\n\n```python\nfrom typing import List, Dict\nimport os\n\n# 初始化环境 (为了演示，使用本地模型，无需 API Key)\n# 注意：首次运行会自动下载模型到本地缓存 (~300MB)\nfrom langchain.text_splitter import CharacterTextSplitter\nfrom langchain.embeddings import HuggingFaceEmbeddings\nfrom langchain.vectorstores import Chroma\nfrom langchain.document_loaders import TextLoader\nfrom langchain.llms import HuggingFacePipeline\nfrom langchain.chains import RetrievalQA\nfrom transformers import pipeline\n\n# 1. 配置本地模型路径 (使用轻量级模型以加快演示)\n# 模型选择：BAAI/bge-small-zh-v1.5 (中文嵌入), and google/flan-t5-small (生成)\n# 实际生产环境中通常会替换为 API (如 OpenAI, Qwen, etc.)\n\nEMBEDDING_MODEL = \"BAAI/bge-small-zh-v1.5\"\nLLM_MODEL = \"google/flan-t5-small\" \n\nclass SimpleRAG:\n    def __init__(self):\n        print(f\"[初始化] 正在加载 Embedding 模型: {EMBEDDING_MODEL}...\")\n        # 步骤 1 & 2 的 Embedding 初始化\n        self.embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)\n        \n        print(f\"[初始化] 正在加载 LLM 模型: {LLM_MODEL}...\")\n        # 步骤 4 的 LLM 初始化 (使用 pipeline 加载 transformers 模型)\n        self.llm_pipeline = pipeline(\n            \"text-generation\",\n            model=LLM_MODEL,\n            max_new_tokens=50,\n            pad_token_id=self.llm_pipeline.config.eos_token_id if hasattr(self, 'llm_pipeline') else 0,\n            device_map=\"auto\"\n        )\n        self.llm = HuggingFacePipeline(pipeline=self.llm_pipeline)\n        \n        self.vectorstore = None\n\n    def load_documents(self, file_path: str):\n        \"\"\"\n        步骤 1: 文档加载与切分\n        \"\"\"\n        print(f\"[加载] 正在读取文件: {file_path}\")\n        if not os.path.exists(file_path):\n            raise FileNotFoundError(f\"文件 {file_path} 不存在。\")\n            \n        loader = TextLoader(file_path)\n        documents = loader.load()\n        \n        print(f\"[切分] 文档总数: {len(documents)}, 正在切分...\")\n        \n        # 使用字符分割器，设置切分长度 (默认 500 字符) 和 重叠 (50)\n        splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)\n        split_documents = splitter.split_documents(documents)\n        \n        print(f\"[切分] 切分后片段数: {len(split_documents)}\")\n        return split_documents\n\n    def build_index(self, documents: List):\n        \"\"\"\n        步骤 2: 构建向量索引 (Embedding + 存储)\n        这里直接调用 Chroma 构建内存中的向量库。\n        \"\"\"\n        print(\"[检索] 正在构建向量索引...\")\n        # 文本 -> 向量 -> 存入 Chroma (Local Vector DB)\n        self.vectorstore = Chroma.from_documents(\n            documents, \n            self.embeddings,\n            persist_directory=\"./chroma_db\" # 本地持久化\n        )\n        print(\"[检索] 向量索引构建完成。\")\n\n    def query(self, query: str) -> str:\n        \"\"\"\n        步骤 3: 检索 (Retrieval) + 步骤 4: 生成 (Generation)\n        整合为 RetrievalQA 流程。\n        \"\"\"\n        if not self.vectorstore:\n            raise RuntimeError(\"尚未构建索引，请先调用 build_index。\")\n            \n        print(f\"[查询] 用户问题: {query}\")\n        \n       ",
+  "reasoning": null,
+  "memory_before_mb": 21108,
+  "memory_after_mb": 21108,
+  "is_warmup": false,
+  "round": 4,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 9216,
+      "cache_efficiency": 32.6,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 1,
+            "partial_tokens_skipped": 18,
+            "last_partial_tokens_skipped": 18,
+            "last_tokens_to_next_block": 2030,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 1189,
+  "tokens_generated": 124,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 3456,
+  "ttft_ms": 1527,
+  "decode_tok_s": 64.31,
+  "response": "Transformer 摒弃 RNN 的循环结构，利用自注意力机制直接建模长距离依赖并实现并行计算。其核心包含：通过 Q、K、V 线性变换与缩放点积计算注意力；引入多头注意力增强多子空间表达能力；采用正弦/余弦或旋转位置编码注入序列位置信息；结合位置前馈网络与残差连接，配合层归一化（如 Pre-LN）保障训练稳定性。解码器使用因果掩码实现自回归生成。整体架构凭借 O(1) 路径长度与强大扩展性，成为现代大模型基石。",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 9,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

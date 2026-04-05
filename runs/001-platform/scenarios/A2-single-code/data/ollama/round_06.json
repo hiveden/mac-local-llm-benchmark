@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 16193,
+  "ttft_ms": 219,
+  "decode_tok_s": 64.11,
+  "response": "这是一个基于 `ChromaDB`（轻量级向量数据库）和 `sentence-transformers`（本地嵌入模型）的极简 RAG（检索增强生成）实现。\n\n为了让你无需配置复杂的云服务（如 OpenAI API），本示例完全在**本地运行**，使用开源库。\n\n### 1. 前置准备\n\n你需要安装以下依赖库：\n\n```bash\npip install chromadb sentence-transformers langchain chromadb transformers torch tiktoken\n```\n\n> **注意**：`chromadb` 需要较新版本的 Python。`sentence-transformers` 会自动下载模型，第一次运行时需要联网。\n\n### 2. 完整代码实现\n\n```python\nimport os\nfrom typing import List, Tuple\nfrom langchain.text_splitter import CharacterTextSplitter\nfrom langchain.embeddings import HuggingFaceEmbeddings\nfrom langchain.vectorstores import Chroma\nfrom langchain.llms import HuggingFacePipeline\nfrom transformers import AutoTokenizer, AutoModelForCausalLM, pipeline\nimport torch\n\n# --- 配置部分 ---\nMODEL_NAME = \"sentence-transformers/all-MiniLM-L6-v2\" # 嵌入模型\nLLM_MODEL_NAME = \"google/flan-t5-small\"             # 生成模型 (轻量级，本地运行快)\nCHROMA_DIR = \"./tmp_chroma\"                          # 向量数据库存储路径\n\n# 初始化目录（防止报错）\nos.makedirs(CHROMA_DIR, exist_ok=True)\n\n\nclass SimpleRAG:\n    def __init__(self):\n        self.embeddings = HuggingFaceEmbeddings(model_name=MODEL_NAME)\n        self.vectorstore = None\n        self.llm_pipeline = None\n\n    # --- 步骤 1: 文档切分 (Document Splitting) ---\n    @staticmethod\n    def split_documents(texts: List[str], chunk_size=200, chunk_overlap=50):\n        splitter = CharacterTextSplitter(\n            separator=\" \",\n            chunk_size=chunk_size,\n            chunk_overlap=chunk_overlap,\n            length_function=len,\n        )\n        documents = []\n        for text in texts:\n            docs = splitter.split_text(text)\n            for doc in docs:\n                # 创建一个简单的文档对象，包含内容元数据\n                documents.append({\"page_content\": doc, \"metadata\": {\"source\": \"local\"}})\n        return documents\n\n    # --- 步骤 2: Embedding & 向量化存储 (Embedding & Vector Store) ---\n    def index_documents(self, texts: List[str]):\n        print(\"正在切分文档...\")\n        chunks = self.split_documents(texts)\n        \n        if not chunks:\n            raise ValueError(\"没有生成任何文本块\")\n\n        # 使用 ChromaDB 初始化存储，并加载嵌入向量\n        self.vectorstore = Chroma.from_documents(\n            documents=chunks, \n            embedding=self.embeddings,\n            persist_directory=CHROMA_DIR\n        )\n        print(f\"成功索引了 {len(chunks)} 个文本块到本地数据库。\")\n\n    # --- 步骤 3: 检索 (Retrieval) ---\n    def retrieve_context(self, query: str, top_k=3):\n        if not self.vectorstore:\n            raise RuntimeError(\"请先加载文档 (index_documents)\")\n        \n        print(f\"正在检索问题：'{query}'\")\n        # 搜索最相关的 Top K 个向量\n        docs = self.vectorstore.similarity_search(query=query, k=top_k)\n        \n        # 将结果整理为字符串列表\n        context_list = [doc.page_content for doc in docs]\n        \n        if not context_list:\n            print(\"未找到相关上下文。\")\n        else:\n            print(f\"检索到 {len(context_list)} 条相关片段：\")\n            for i, c in enumerate(context_list):\n                print(f\"  [{i+1}] {c[:60]}...\")\n                \n        return context_list\n\n    # --- 步骤 4: 生成 (Generation) ---\n    def generate_response(self, query: str, context: List[str]) -> str:\n        if not self.llm_pipeline:\n            print(\"正在初始化本地 LLM 模型 (这可能需要几分钟)...\")\n            \n            # 加载提示词和 Pipeline\n            tokenizer = AutoTokenizer.from_pretrained(LLM_MODEL_NAME)\n            model = AutoModelForCausalLM.from_pretrained(\n                LLM_MODEL_NAME, \n                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,\n                device_map=\"auto\" if torch.cuda.is_available() else None\n            )\n            \n            # 如果 CPU 运行，显式指定 device\n            if not hasattr(model, \"device\") or str(model.device) != \"cpu",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 6,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}
