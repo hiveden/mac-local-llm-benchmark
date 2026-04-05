@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "gemma4:26b",
+  "prompt_tokens": 1258,
+  "tokens_generated": 189,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 5106,
+  "ttft_ms": 263,
+  "decode_tok_s": 39.02,
+  "response": "这份文档深入解析了 Transformer 架构，其核心要点如下：\n\n1.  **核心机制**：摒弃了 RNN 的顺序计算，通过**自注意力机制**直接建模全局依赖，解决了并行化难与长距离信息衰减问题；利用**多头注意力**从多个子空间捕获复杂特征。\n2.  **结构设计**：通过**位置编码**注入序列顺序信息；每层包含**前馈网络**、**残差连接**及**层归一化**（现代多采用 Pre-LN）以提升训练稳定性。\n3.  **演进趋势**：现代大模型（如 GPT）多采用 **Decoder-only** 架构，并引入了 SwiGLU 激活函数、旋转位置编码（RoPE）及更高效的训练优化策略（如 AdamW、混合精度训练）。",
+  "reasoning": null,
+  "memory_before_mb": 23552,
+  "memory_after_mb": 23552,
+  "is_warmup": false,
+  "round": 4,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

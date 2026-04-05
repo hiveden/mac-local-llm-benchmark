@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15839,
+  "ttft_ms": 54,
+  "decode_tok_s": 64.87,
+  "response": "这是一个使用 Python 实现的极简 RAG（检索增强生成）系统。为了保持“最小化”且不依赖庞大的本地模型部署，我们将使用 **`langchain-community`** 配合开源 Embedding 模型（如 `sentence-transformers`）和 LLM API（以 Mock 数据或免费 API 为例），逻辑清晰且易于扩展。\n\n### 前置准备\n\n你需要安装以下库：\n```bash\npip install langchain langchain-community sentence-transformers transformers PyPDF2\n# 如果你需要真实的 OpenAI API，请额外安装 openai 并配置密钥\n# pip install openai\n```\n\n### 代码实现 (minimal_rag.py)\n\n这段代码包含四个核心步骤：**文档切分**、**Embedding（向量化）**、**检索**、**生成**。\n\n```python\nimport os\nfrom typing import List, Dict\nfrom langchain_community.document_loaders import TextLoader\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\nfrom langchain_community.embeddings import SentenceTransformerEmbeddings\nfrom langchain_community.vectorstores import FAISS\nfrom langchain_core.prompts import ChatPromptTemplate\nfrom langchain_core.output_parsers import StrOutputParser\n\n# --- 1. 文档切分 (Document Splitting) ---\ndef split_documents(text: str, chunk_size: int = 500, chunk_overlap: int = 50) -> List:\n    \"\"\"\n    将长文本分割成小的块（Chunks），以便进行向量化。\n    \"\"\"\n    text_splitter = RecursiveCharacterTextSplitter(\n        chunk_size=chunk_size,\n        chunk_overlap=chunk_overlap,\n        length_function=len,\n    )\n    # 模拟创建一个文档对象 (实际生产中通常使用 TextLoader)\n    doc = [f\"Page {i}: {text[i:i+chunk_size]}\" for i in range(0, len(text), chunk_size)]\n    \n    # 为了演示，我们手动创建 LangChain Document 对象\n    return [{\"page_content\": text[i:i+chunk_size], \"metadata\": {\"source\": f\"doc_{i}\"}} \n            for i in range(0, len(text), chunk_size)]\n\n# --- 2. Embedding (向量化) & 向量存储 ---\ndef create_vector_store(docs: List[Dict]) -> FAISS:\n    \"\"\"\n    将文档切块转换为向量，并存储在内存向量库中。\n    这里使用 sentence-transformers (免费开源模型)。\n    \"\"\"\n    # 注意：实际使用中需确保已下载 'all-MiniLM-L6-v2' 模型\n    embeddings = SentenceTransformerEmbeddings(model_name=\"all-MiniLM-L6-v2\")\n    \n    vector_store = FAISS.from_documents(\n        [type('Doc', (), {\"page_content\": d[\"page_content\"], \"metadata\": d[\"metadata\"]})() for d in docs], \n        embeddings\n    )\n    return vector_store\n\n# --- 3. 检索 (Retrieval) ---\ndef retrieve_context(query: str, vector_store: FAISS, k: int = 2) -> str:\n    \"\"\"\n    根据用户问题检索最相关的 K 个文档块。\n    \"\"\"\n    retriever = vector_store.as_retriever(search_kwargs={\"k\": k})\n    context_docs = retriever.invoke(query)\n    \n    # 将检索到的内容拼接成字符串\n    return \"\\n\\n\".join([doc.page_content for doc in context_docs])\n\n# --- 4. 生成 (Generation) ---\ndef generate_answer(prompt_template: str, query: str, context: str, model_name: str = \"gpt-3.5-turbo\") -> str:\n    \"\"\"\n    将上下文和查询组装成提示词，调用 LLM 生成答案。\n    \n    注意：为了演示最小化实现，这里我们模拟了 LLM 的输出。\n    如果你有真实的 API Key (如 OpenAI)，可以替换下面的 mock_llm_chain。\n    \"\"\"\n    \n    # 构建最终提示词\n    full_prompt = f\"\"\"基于以下上下文回答用户的问题。如果上下文中没有相关信息，请回答'我不知道'。\n\n上下文：\n{context}\n\n问题：\n{query}\n\n回答：\n\"\"\"\n    \n    # 【模拟 LLM】在实际项目中，这里应替换为 LangChain + OpenAI/Anthropic/HuggingFace 客户端\n    # 示例：return langchain_llm.invoke(full_prompt)\n    return f\"[模拟生成] 基于上下文，我认为 {context.split('.')[0]}。\"\n\n# --- 主流程控制 ---\ndef run_rag_pipeline():\n    # 1. 准备文档 (模拟一个长文本)\n    raw_text = (\n        \"Python 是一门高级编程语言。它",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 9,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

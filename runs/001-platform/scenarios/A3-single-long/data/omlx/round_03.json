@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 106,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 3178,
+  "ttft_ms": 1334,
+  "decode_tok_s": 57.47,
+  "response": "Transformer 摒弃循环结构，基于自注意力机制直接建模序列关系，解决并行化与长距离依赖难题。其核心包括：通过 QKV 线性变换计算注意力分数；采用多头机制捕获多视角信息；利用正弦/余弦或旋转位置编码注入位置信号。架构融合前馈网络、残差连接及层归一化（现多用 Pre-LN）。解码器采用因果掩码实现自回归生成。配合 AdamW 优化器等策略，使 Transformer 能扩展至超大规模，成为现代大语言模型的基石架构。",
+  "reasoning": null,
+  "memory_before_mb": 19829,
+  "memory_after_mb": 19829,
+  "is_warmup": false,
+  "round": 3,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 0,
+      "cache_efficiency": 0.0,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 3,
+            "partial_tokens_skipped": 2630,
+            "last_partial_tokens_skipped": 1308,
+            "last_tokens_to_next_block": 740,
+            "num_files": 0,
+            "total_size_bytes": 0,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 0,
+        "total_size_bytes": 0,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

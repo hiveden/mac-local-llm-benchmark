@@ -1,0 +1,35 @@
+{
+  "name": "RUN 01: Ollama vs oMLX vs mlx-lm 三平台对比",
+  "date": "2026-04-05",
+  "description": "同一模型在三个 MLX 推理平台的性能对比 + Gemma4 跨引擎对比",
+
+  "tests": [
+    {
+      "name": "qwen3.5-35b-mlx",
+      "description": "三平台都走 MLX 路径，最公平对比",
+      "providers": ["ollama", "omlx", "mlx-lm"],
+      "models": {
+        "ollama": "qwen3.5:35b-a3b-nvfp4",
+        "omlx": "Qwen3.5-35B-A3B-4bit",
+        "mlx-lm": "~/.omlx/models/Qwen3.5-35B-A3B-4bit"
+      },
+      "prompts": ["short-qa-rag", "code-gen-rag", "long-summarize"],
+      "rounds": 10,
+      "warmup": 1,
+      "timeout": 120
+    },
+    {
+      "name": "gemma4-26b-cross-engine",
+      "description": "Ollama (llama.cpp Metal) vs oMLX (MLX native)，展示 MLX 加速缺失的真实差距",
+      "providers": ["ollama", "omlx"],
+      "models": {
+        "ollama": "gemma4:26b",
+        "omlx": "gemma-4-26b-a4b-it-4bit"
+      },
+      "prompts": ["short-qa-rag", "code-gen-rag", "long-summarize"],
+      "rounds": 10,
+      "warmup": 1,
+      "timeout": 180
+    }
+  ]
+}

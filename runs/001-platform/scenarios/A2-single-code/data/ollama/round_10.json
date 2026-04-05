@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15835,
+  "ttft_ms": 62,
+  "decode_tok_s": 64.92,
+  "response": "这是一个基于 `Python` 和轻量级库（`langchain` + `chromadb`）的最小化 RAG（检索增强生成）实现。\n\n为了保持代码的可运行性且无需复杂的配置，本示例将：\n1.  **模拟** Embedding 模型（使用本地向量计算，无需 API Key）。\n2.  **模拟** LLM（返回固定字符串作为回答）。\n3.  使用 `langchain` 和 `chromadb` 作为核心框架。\n\n### 前置准备\n\n你需要安装以下库：\n\n```bash\npip install langchain langchain-chroma sentence-transformers rich\n```\n\n> **注意**：实际生产环境中，通常将“模拟 Embedding\"替换为 `sentence-transformers` (本地) 或 `OpenAIEmbeddings` (云端)，将“模拟 LLM\"替换为真实的 API 调用。下面的代码为了方便演示，使用内置向量库进行全本地运行。\n\n### 完整代码实现\n\n```python\nimport os\nimport re\nfrom typing import List, Tuple\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\nfrom langchain.vectorstores import Chroma\nfrom langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings\n# 如果无法安装 sentence-transformers，可以使用下面的 MockEmbedding 类替代完整逻辑\n\ntry:\n    from langchain.chat_models import ChatOpenAI\nexcept ImportError:\n    # 临时处理：如果没有 openai，使用一个模拟类代替\n    class MockChatModel:\n        def invoke(self, prompt):\n            return \"这是模拟的 AI 回复。根据检索到的上下文，我认为答案是：{context}。\"\n    \n    ChatOpenAI = None\n\nclass SimpleRAG:\n    def __init__(self, chunk_size=400, chunk_overlap=50):\n        self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)\n        # 注意：实际环境中，这里通常替换为 OpenAIEmbeddings() 或 AzureOpenAIEmbeddings()\n        # 为了无需 API Key 运行，我们使用 SentenceTransformerEmbeddings (本地模型)\n        try:\n            self.embedder = SentenceTransformerEmbeddings(model_name=\"all-MiniLM-L6-v2\")\n            print(\"✅ 已加载本地 Embedding 模型 (SentenceTransformer)。\")\n        except Exception as e:\n            print(f\"⚠️ 无法加载本地模型，回退到模拟模式：{e}\")\n            self.embedder = None\n\n        # 初始化向量数据库\n        self.vector_store = Chroma() \n\n    def _split_documents(self, text: str) -> List[str]:\n        \"\"\"步骤 1: 文档切分 (Text Splitting)\"\"\"\n        print(f\"--- [切分] 正在处理 {len(text)} 个字符的文档...\")\n        docs = self.text_splitter.split_text(text)\n        print(f\"   -> 切分为 {len(docs)} 个片段。\")\n        return docs\n\n    def _build_vector_store(self, texts: List[str]):\n        \"\"\"步骤 2: Embedding 与向量化存储 (Embedding & Indexing)\"\"\"\n        if self.embedder is None:\n            # 模拟模式下的向量生成逻辑\n            import numpy as np\n            vectors = [np.random.rand(384).tolist() for _ in range(len(texts))]\n            self.vector_store.add_texts(texts, vectors=vectors)\n            print(\"   -> (模拟模式) 已添加 {len(texts)} 条向量数据。\")\n        else:\n            # 真实模式：计算向量并存储\n            self.vector_store.add_texts(texts)\n            print(f\"   -> (真实模式) 已向 ChromaDB 添加 {len(texts)} 个嵌入向量。\")\n\n    def _retrieve(self, query: str, top_k=3):\n        \"\"\"步骤 3: 检索 (Retrieval)\"\"\"\n        print(f\"\\n--- [检索] 查询内容：'{query}' ...\")\n        \n        if self.embedder is None:\n            # 模拟检索：随机返回前几个文档\n            docs = self.vector_store.documents[:top_k]\n            scores = [0.8, 0.75, 0.7][:len(docs)]\n        else:\n            # 真实检索\n            results = self.vector_store.similarity_search_with_score(query=query, k=top_k)\n            docs = [doc for doc, score in results]\n            scores = [score for _, score in results]\n\n        print(f\"   -> 检索到 {len(docs)} 个相关片段。\")\n        return docs\n\n    def _generate(self, query: str, context_docs: List",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15600,
+  "ttft_ms": 51,
+  "decode_tok_s": 65.85,
+  "response": "这是一个基于 `langchain`、`sentence-transformers`（用于本地 Embedding）和简单的内存索引实现的 RAG（检索增强生成）最小化代码示例。\n\n这个实现不依赖庞大的外部数据库（如 Milvus、ChromaDB），而是使用 Python 原生的 `pickle` 或 `json` 将向量化数据保存在本地，模拟一个完整的 RAG 流程。\n\n### 前置准备\n\n你需要安装以下库：\n\n```bash\npip install langchain sentence-transformers requests transformers\n```\n*(注：如果你没有 API Key，下面的代码完全使用本地模型 `all-MiniLM-L6-v2`，无需联网调用 API)*\n\n### 完整代码实现\n\n```python\nimport pickle\nimport os\nimport re\nfrom typing import List, Tuple\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\nfrom langchain_huggingface import HuggingFaceEmbeddings\nfrom langchain.schema import Document\nimport torch\n\n# --- 1. 配置 (Configuration) ---\nCHUNK_SIZE = 200\nCHUNK_OVERLAP = 50\nMODEL_NAME = \"sentence-transformers/all-MiniLM-L6-v2\"  # 轻量级本地模型\nDB_PATH = \"./rag_vector_store.pkl\"\nSAMPLE_TEXTS = [\n    \"人工智能（AI）是计算机科学的一个分支，它企图了解智能的实质，并生产出一种新的能以人类智能相似的方式做出反应的智能机器。\",\n    \"机器学习是人工智能的核心技术之一，通过统计方法使计算机从数据中学习规律，而不再需要显式的编程指令。\",\n    \"深度学习是机器学习的一个子集，利用多层神经网络来处理复杂的特征表示，在图像识别和自然语言处理领域取得了巨大成功。\",\n    \"向量检索是将文本转化为高维向量，并通过计算向量之间的距离来快速找到相似内容的过程。\"\n]\n\nclass RAGSystem:\n    def __init__(self, model_name=MODEL_NAME):\n        self.splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)\n        self.embedding_model = HuggingFaceEmbeddings(model_name=model_name)\n        self.vector_store = {}  # 模拟向量数据库：{chunk_id: vector}\n\n    def split_documents(self, texts: List[str]) -> List[Document]:\n        \"\"\"步骤一：文档切分\"\"\"\n        full_text = \" \".join(texts)\n        # 分割为字符串列表，再包装成 Document 对象\n        raw_chunks = self.splitter.split_text(full_text)\n        \n        documents = []\n        for i, chunk in enumerate(raw_chunks):\n            if len(chunk.strip()) == 0:\n                continue\n            documents.append(\n                Document(\n                    page_content=chunk,\n                    metadata={\"source\": f\"doc_{i}\", \"index\": i}\n                )\n            )\n        return documents\n\n    def embed_documents(self, documents: List[Document]) -> List[Tuple[str, list]]:\n        \"\"\"步骤二：Embedding (向量化)\"\"\"\n        # 提取内容\n        texts = [doc.page_content for doc in documents]\n        \n        # 调用 embedding 模型生成向量 (返回 numpy array 或 list)\n        embeddings = self.embedding_model.embed_documents(texts)\n        \n        result = []\n        for i, emb in enumerate(embeddings):\n            # 转换为列表以确保可序列化\n            result.append((documents[i].metadata[\"index\"], list(emb)))\n        return result\n\n    def save_index(self, indexed_data: List[Tuple[str, list]]):\n        \"\"\"将索引保存到本地磁盘\"\"\"\n        with open(DB_PATH, 'wb') as f:\n            pickle.dump(indexed_data, f)\n        print(f\"索引已保存至 {DB_PATH}\")\n\n    def load_index(self) -> bool:\n        \"\"\"从本地磁盘加载索引\"\"\"\n        if not os.path.exists(DB_PATH):\n            return False\n        \n        with open(DB_PATH, 'rb') as f:\n            self.vector_store = pickle.load(f)\n        \n        # 转为 {id: vector} 格式方便检索\n        print(\"向量库已加载\")\n        return True\n\n    def retrieve(self, query: str, top_k=2) -> List[Document]:\n        \"\"\"步骤三：检索 (向量化 + 相似度搜索)\"\"\"\n        if not self.load_index():\n            raise ValueError(\"向量库为空，请先执行初始化流程。\")\n\n        # 1. Embedding 查询\n        query_embedding = self.embedding_model.embed_query(query)\n        \n        # 2. 简单暴力检索 (在真实场景中此处应使用 FAISS/HNSW 索引)\n        # 计算余弦相似度：(A . B) / (||A|| * ||B||)",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 4,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

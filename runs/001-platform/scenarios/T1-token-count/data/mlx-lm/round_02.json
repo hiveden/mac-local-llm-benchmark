@@ -1,0 +1,11 @@
+{
+  "provider": "mlx-lm",
+  "model": "~/.omlx/models/Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 20,
+  "completion_tokens": 100,
+  "total_time_ms": 1278,
+  "response": "RAG（检索增强生成）的工作原理可以概括为“先查后答”：当用户提出问题时，系统首先会在外部知识库中**检索**与问题高度相关的文档片段或信息，将这些检索到的内容作为**上下文**（Context）与原始问题一起**输入**给大语言模型，最后由模型基于这些补充信息生成**准确、具体且可溯源**的回答，从而有效解决大模型知识滞后、幻觉严重以及无法访问私有数据的问题。",
+  "stream": false,
+  "is_warmup": false,
+  "round": 2
+}

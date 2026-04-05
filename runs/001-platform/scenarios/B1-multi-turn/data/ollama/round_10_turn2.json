@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 151,
+  "tokens_generated": 91,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 1717,
+  "ttft_ms": 349,
+  "decode_tok_s": 66.53,
+  "response": "1. **智能客服**：自动检索企业内部产品手册与历史工单，为客服人员实时生成精准且符合公司规范的应答建议。\n2. **合规审查**：即时抓取最新的法律法规文档与企业内部制度，辅助法务人员快速分析合同条款的合规风险。\n3. **企业知识库问答**：连接分散的财报、项目报告及技术文档库，让员工通过自然语言提问直接获取经过验证的定制化业务数据。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

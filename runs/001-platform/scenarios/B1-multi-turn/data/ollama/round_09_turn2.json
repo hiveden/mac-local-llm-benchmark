@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 147,
+  "tokens_generated": 113,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 2066,
+  "ttft_ms": 363,
+  "decode_tok_s": 66.34,
+  "response": "1. **智能客服与工单系统**：实时检索企业内部产品手册和历史案例库，让 AI 能准确回答客户关于具体政策或技术故障的咨询，减少人工干预。\n2. **企业知识管理与决策支持**：自动聚合分析海量的研发报告、法律合同及市场情报，辅助管理层快速生成基于最新事实的综合分析报告。\n3. **垂直领域专业助手**：结合医疗指南或金融法规等受限的专业文档库，为医生或分析师提供具备权威依据且无“幻觉”风险的精准建议。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 9,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

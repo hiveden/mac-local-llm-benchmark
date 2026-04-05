@@ -1,0 +1,35 @@
+{
+  "name": "A2-single-code",
+  "description": "代码生成单轮请求 — 中等长度生成场景",
+  "prompt": {
+    "system": "You are a Python expert.",
+    "user": "用 Python 写一个 RAG 向量检索最小实现，包含文档切分、embedding、检索和生成四个步骤",
+    "max_tokens": 1024
+  },
+  "providers": [
+    {
+      "name": "ollama",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "api_key": "",
+      "model": "qwen3.5:35b-a3b-nvfp4",
+      "managed": true
+    },
+    {
+      "name": "omlx",
+      "base_url": "http://127.0.0.1:11435/v1",
+      "api_key": "omlx2026",
+      "model": "Qwen3.5-35B-A3B-4bit",
+      "managed": true
+    },
+    {
+      "name": "mlx-lm",
+      "base_url": "http://127.0.0.1:8002/v1",
+      "api_key": "",
+      "model": "~/.omlx/models/Qwen3.5-35B-A3B-4bit",
+      "managed": false
+    }
+  ],
+  "rounds": 10,
+  "warmup": 1,
+  "timeout": 120
+}

@@ -1,0 +1,6 @@
+{
+  "timestamp": "2026-04-05T14:42:47Z",
+  "provider": "mlx-lm",
+  "model": "~/.omlx/models/Qwen3.5-35B-A3B-4bit",
+  "free_memory_mb": 4907
+}

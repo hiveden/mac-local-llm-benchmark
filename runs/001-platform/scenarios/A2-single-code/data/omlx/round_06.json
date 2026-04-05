@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1645,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16114,
+  "ttft_ms": 167,
+  "decode_tok_s": 103.16,
+  "response": "这是一个基于纯 Python 实现的 RAG（检索增强生成）最小化代码示例。为了保持“最小实现”且无需复杂的深度学习框架依赖，我们将使用：\n\n1.  **`langchain-core` / `langchain-community`**：用于文档切分和 LangChain 组件的轻量级编排。\n2.  **`sentence-transformers`**：用于生成高质量的 Embedding（向量）。\n3.  **`faiss-cpu`**：用于本地向量数据库检索（无需连接数据库服务）。\n4.  **模拟 LLM**：为了演示完整性，使用 `MockLLM` 模拟生成过程（实际使用时可替换为真实 API）。\n\n### 前置准备\n\n你需要安装以下库：\n```bash\npip install langchain sentence-transformers faiss-cpu\n```\n*(注：如果 `sentence-transformers` 下载模型慢，请确保网络通畅，它会自动下载 `all-MiniLM-L6-v2` 等预训练模型)*\n\n### 完整代码实现\n\n```python\nimport os\nimport re\nfrom typing import List, Dict\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\nfrom sentence_transformers import SentenceTransformer\nfrom langchain_community.vectorstores import FAISS\nfrom langchain_core.documents import Document\nfrom langchain_core.prompts import ChatPromptTemplate\nfrom langchain_core.output_parsers import StrOutputParser\n\n# ==========================================\n# 1. 模拟 LLM (Mock LLM) \n# ==========================================\nclass SimpleMockLLM:\n    \"\"\"\n    为了演示流程，这里模拟一个生成器。\n    实际场景中，请替换为 LangChain 的 ChatOpenAI 或类似的真实模型。\n    \"\"\"\n    def invoke(self, context: str, question: str) -> str:\n        # 简单的模拟逻辑：基于上下文构造答案\n        return f\"[模拟回答] 基于提供的上下文：\\n{context}\\n\\n针对您的问题：{question}，我的回答是：根据上下文，该问题涉及的内容已找到。\"\n\n    def __call__(self, inputs: dict) -> str:\n        return self.invoke(inputs.get(\"context\"), inputs.get(\"question\"))\n\n# ==========================================\n# 2. 定义 RAG 流程类\n# ==========================================\nclass SimpleRAG:\n    def __init__(self, embedding_model_name=\"all-MiniLM-L6-v2\"):\n        \"\"\"\n        初始化 RAG 系统\n        :param embedding_model_name: 使用的 Embedding 模型名称 (HuggingFace 模型名)\n        \"\"\"\n        print(f\"正在加载 Embedding 模型: {embedding_model_name} ...\")\n        self.embedder = SentenceTransformer(embedding_model_name)\n        self.text_splitter = RecursiveCharacterTextSplitter(\n            chunk_size=50,  # 设置很小的 chunk 大小以便演示效果\n            chunk_overlap=10,\n            separators=[\"\\n\\n\", \"\\n\", \" \", \"\"]\n        )\n        self.vector_store = None\n        self.llm = SimpleMockLLM()\n\n    def step_1_load_and_split(self, texts: List[str]) -> List[Document]:\n        \"\"\"\n        步骤 1: 文档加载与切分\n        \"\"\"\n        print(\">>> 步骤 1: 文档加载与切分\")\n        docs = []\n        for text in texts:\n            # 创建 LangChain 的 Document 对象\n            docs.extend(self.text_splitter.create_documents([text]))\n        return docs\n\n    def step_2_embed_and_store(self, documents: List[Document]):\n        \"\"\"\n        步骤 2: 生成 Embedding 并存储到向量库\n        \"\"\"\n        print(\">>> 步骤 2: 生成 Embedding 并构建向量索引\")\n        # 使用 SentenceTransformer 将文档转化为向量\n        # 注意：LangChain 的 FAISS 支持直接传入 EmbeddingFunction\n        self.vector_store = FAISS.from_documents(\n            documents, \n            embedding=self.embedder\n        )\n        print(f\"向量库构建完成，包含 {self.vector_store.index.ntotal} 个向量片段。\")\n\n    def step_3_retrieve(self, query: str, top_k: int = 2) -> List[Document]:\n        \"\"\"\n        步骤 3: 检索相关片段\n        \"\"\"\n        print(f\">>> 步骤 3: 检索问题: '{query}'\")\n        # 执行相似度检索\n        docs = self.vector_store.similarity_search(query, k=top_k)\n        return docs\n\n    def step_4_generate(self, query: str, retrieved_docs: List[Document]) -> str:\n        \"\"\"\n        步骤 4: 生成最终回答\n        \"\"\"",
+  "reasoning": null,
+  "memory_before_mb": 20224,
+  "memory_after_mb": 20224,
+  "is_warmup": false,
+  "round": 6,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 0,
+      "cache_efficiency": 0.0,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 6,
+            "partial_tokens_skipped": 5378,
+            "last_partial_tokens_skipped": 1072,
+            "last_tokens_to_next_block": 976,
+            "num_files": 0,
+            "total_size_bytes": 0,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 0,
+        "total_size_bytes": 0,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

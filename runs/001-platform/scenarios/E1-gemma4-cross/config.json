@@ -1,0 +1,28 @@
+{
+  "name": "E1-gemma4-cross",
+  "description": "Gemma4-26B 跨引擎对比 — llama.cpp vs MLX",
+  "prompt": {
+    "system": "",
+    "user": "用一段话解释 RAG 的工作原理",
+    "max_tokens": 512
+  },
+  "providers": [
+    {
+      "name": "ollama",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "api_key": "",
+      "model": "gemma4:26b",
+      "managed": true
+    },
+    {
+      "name": "omlx",
+      "base_url": "http://127.0.0.1:11435/v1",
+      "api_key": "omlx2026",
+      "model": "gemma-4-26b-a4b-it-4bit",
+      "managed": true
+    }
+  ],
+  "rounds": 10,
+  "warmup": 1,
+  "timeout": 180
+}

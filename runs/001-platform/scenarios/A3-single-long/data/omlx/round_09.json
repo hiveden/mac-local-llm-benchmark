@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 109,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 3260,
+  "ttft_ms": 1331,
+  "decode_tok_s": 56.51,
+  "response": "Transformer 摒弃 RNN 顺序计算，以自注意力机制直接建模全局依赖，解决并行化与长距离依赖难题。其核心包括：自注意力通过 QKV 映射计算相关性；多头机制增强表达能力；正弦位置编码注入顺序信息；前馈网络结合残差与归一化保障深层训练；解码器采用因果掩码支持自回归生成。配合 AdamW 优化与混合精度训练，Transformer 凭借 O(1) 长路径与强大表达力，成为大模型基础架构，支撑了从文本生成到 AI 应用的广泛发展。",
+  "reasoning": null,
+  "memory_before_mb": 19829,
+  "memory_after_mb": 19829,
+  "is_warmup": false,
+  "round": 9,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 0,
+      "cache_efficiency": 0.0,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 9,
+            "partial_tokens_skipped": 10482,
+            "last_partial_tokens_skipped": 1309,
+            "last_tokens_to_next_block": 739,
+            "num_files": 0,
+            "total_size_bytes": 0,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 0,
+        "total_size_bytes": 0,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1736,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16161,
+  "ttft_ms": 170,
+  "decode_tok_s": 108.57,
+  "response": "这是一个使用 Python 编写的 RAG（检索增强生成）最小实现示例。\n\n为了保持代码的“最小化”且无需配置复杂的 API Key 或数据库，本示例将使用以下策略：\n1.  **文档切分**：使用简单的字符串分割（基于换行符）。\n2.  **Embedding**：使用 `sentence-transformers` 库（本地运行，无需 API），或者提供一个简单的 Hash 模拟方案（如果不想安装模型）。**本示例选择使用 `sentence-transformers`**，因为它是目前本地运行 RAG 最标准、效果最好的轻量级方案。\n3.  **向量检索**：使用 `scikit-learn` 的 `NearestNeighbors` 模拟数据库存储和相似性搜索（余弦相似度）。\n4.  **生成**：使用 `llm` 的占位符（本示例模拟一个简单的关键词提取逻辑，或者调用开源模型如 `transformers` 的 `pipeline`，为了最小化依赖，这里先写一个**模拟生成**逻辑，随后提供接入真实大模型的路径）。\n\n### 前置准备\n\n你需要安装以下库：\n```bash\npip install sentence-transformers scikit-learn\n# 如果想接入真实大模型，建议安装：\n# pip install transformers\n```\n\n### 完整代码实现\n\n```python\nimport numpy as np\nfrom typing import List, Dict, Any\nfrom sentence_transformers import SentenceTransformer\nfrom sklearn.neighbors import NearestNeighbors\nfrom sklearn.metrics.pairwise import cosine_similarity\n\n# ==========================================\n# 1. 文档切分 (Document Chunking)\n# ==========================================\nclass Chunker:\n    def __init__(self, chunk_size: int = 5):\n        \"\"\"\n        简单的按句子切分器，这里为了演示简单，按换行符切分。\n        实际生产环境中会使用正则表达式按句号/换行符更细粒度切分。\n        \"\"\"\n        self.chunk_size = chunk_size\n\n    def split(self, text: str) -> List[str]:\n        # 按换行符分割，再移除空行\n        raw_chunks = text.strip().split('\\n')\n        chunks = [c.strip() for c in raw_chunks if c.strip()]\n        return chunks\n\n# ==========================================\n# 2. Embedding (向量化)\n# ==========================================\nclass EmbeddingModel:\n    def __init__(self, model_name: str = \"all-MiniLM-L6-v2\"):\n        \"\"\"\n        加载本地轻量级 Embedding 模型。\n        all-MiniLM-L6-v2 是 HuggingFace 上非常流行的小型模型，速度快且效果不错。\n        \"\"\"\n        self.model = SentenceTransformer(model_name)\n\n    def embed(self, texts: List[str]) -> np.ndarray:\n        embeddings = self.model.encode(texts, show_progress_bar=False)\n        return embeddings\n\n# ==========================================\n# 3. 检索 (Retrieval)\n# ==========================================\nclass VectorStore:\n    def __init__(self):\n        self.model = None\n        self.chunks = []\n        self.embeddings = None\n        self.nn_model = None\n\n    def add_chunks(self, chunks: List[str]):\n        if not chunks:\n            return\n        \n        self.chunks = chunks\n        # 使用 EmbeddingModel 进行向量化\n        embedder = EmbeddingModel()\n        self.embeddings = embedder.embed(chunks)\n        \n        # 使用 scikit-learn 的 NearestNeighbors 构建索引 (基于余弦相似度)\n        # metric='cosine' 确保我们使用余弦相似度\n        self.nn_model = NearestNeighbors(n_neighbors=3, metric='cosine', algorithm='brute')\n        self.nn_model.fit(self.embeddings)\n\n    def retrieve(self, query: str, top_k: int = 2) -> List[str]:\n        if self.embeddings is None:\n            return []\n        \n        embedder = EmbeddingModel()\n        query_embedding = embedder.embed([query])[0]\n        \n        # 查询最近邻\n        distances, indices = self.nn_model.kneighbors([query_embedding])\n        \n        # 转换距离为相似度 (1 - distance)\n        similarities = 1 - distances[0]\n        \n        results = []\n        for i, idx in enumerate(indices[0]):\n            if similarities[i] > 0.3: # 简单的相似度阈值过滤\n                results.append(self.chunks[idx])\n            if len(results) >= top_k:\n                break\n        return results\n\n# ==========================================\n# 4. 生成 (Generation)\n# ==========================================\nclass Generator:\n    def generate(self, query: str, context: List[str]) -> str:\n        \"\"\"",
+  "reasoning": null,
+  "memory_before_mb": 20224,
+  "memory_after_mb": 20224,
+  "is_warmup": false,
+  "round": 9,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 0,
+      "cache_efficiency": 0.0,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 9,
+            "partial_tokens_skipped": 8594,
+            "last_partial_tokens_skipped": 1072,
+            "last_tokens_to_next_block": 976,
+            "num_files": 0,
+            "total_size_bytes": 0,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 0,
+        "total_size_bytes": 0,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

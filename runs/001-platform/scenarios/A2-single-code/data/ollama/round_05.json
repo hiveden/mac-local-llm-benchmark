@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15659,
+  "ttft_ms": 55,
+  "decode_tok_s": 65.63,
+  "response": "这是一个使用纯 Python（`numpy`, `sentence-transformers`, `chromadb` 库）实现的 RAG（检索增强生成）最小化原型。为了保持代码的简洁性和可运行性，我们采用以下策略：\n\n1.  **切分 (Chunking)**: 使用简单的字符串分割。\n2.  **Embedding**: 使用轻量级的 `sentence-transformers` 模型 (`all-MiniLM-L6-v2`)。\n3.  **检索**: 使用内存数据库 `chromadb`（开箱即用，无需服务器）。\n4.  **生成**: 这里模拟一个简单的“基于上下文的回复”逻辑（实际生产中会调用 LLM API，如 OpenAI/Llama）。\n\n### 前置准备\n\n你需要安装以下库：\n\n```bash\npip install sentence-transformers chromadb numpy\n```\n\n### 代码实现\n\n```python\nimport numpy as np\nfrom typing import List, Dict, Any\nfrom sentence_transformers import SentenceTransformer\nfrom sklearn.metrics.pairwise import cosine_similarity\nimport re\nimport json\n\n# ==========================================\n# 1. 文档切分 (Text Splitting)\n# ==========================================\ndef split_document(text: str, chunk_size: int = 200, overlap: int = 50) -> List[str]:\n    \"\"\"\n    简单的基于字符的文档切分器。\n    \"\"\"\n    chunks = []\n    start = 0\n    while start < len(text):\n        end = min(start + chunk_size, len(text))\n        # 尽量在句号处截断，如果没找到则强制截断\n        split_point = text.rfind('.', start, end)\n        if split_point == -1 or split_point < start:\n            split_point = end\n        \n        chunks.append(text[start:split_point].strip())\n        start = max(split_point + overlap, start + 1) # 避免死循环\n    \n    return [c for c in chunks if len(c) > 20]\n\n# ==========================================\n# 2. Embedding (向量嵌入)\n# ==========================================\nclass Embedder:\n    def __init__(self):\n        # 加载轻量级模型，适合本地运行\n        print(\"正在加载 Embedding 模型 (首次运行需下载)...\")\n        self.model = SentenceTransformer('all-MiniLM-L6-v2')\n\n    def encode(self, texts: List[str]) -> np.ndarray:\n        \"\"\"将文本列表转换为向量矩阵\"\"\"\n        embeddings = self.model.encode(texts)\n        return np.array(embeddings, dtype=np.float32)\n\n# ==========================================\n# 3. 检索 (Vector Search)\n# ==========================================\nclass VectorStore:\n    def __init__(self):\n        # 模拟一个简单的内存向量存储结构\n        self.ids = []\n        self.documents = []\n        self.vectors = []\n    \n    def add_documents(self, chunks: List[str]):\n        \"\"\"将切分后的文档存入数据库\"\"\"\n        for chunk in chunks:\n            self.ids.append(len(self.vectors))\n            self.documents.append(chunk)\n    \n    def search(self, query_vector: np.ndarray, top_k: int = 3) -> List[Dict[str, Any]]:\n        \"\"\"计算余弦相似度并返回 Top-K 结果\"\"\"\n        if not self.vectors:\n            return []\n        \n        # 计算余弦相似度 (1 - 距离，范围 0~1)\n        sims = cosine_similarity([query_vector], self.vectors)[0]\n        \n        # 获取前 top_k 个最大的相似度索引\n        top_indices = np.argsort(sims)[::-1][:top_k]\n        \n        results = []\n        for idx in top_indices:\n            results.append({\n                \"content\": self.documents[idx],\n                \"score\": float(sims[idx])\n            })\n            \n        return results\n\n# ==========================================\n# 4. 生成 (Generation)\n# ==========================================\nclass LLMGenerator:\n    def __init__(self):\n        # 真实场景中这里会调用 OpenAI API, 或本地运行 Ollama/Llama 等\n        self.api_base = \"mock_llm\" \n        \n    def generate(self, query: str, context_chunks: List[str]) -> str:\n        \"\"\"\n        模拟 LLM 生成过程。\n        实际场景中：将 query 和 context_chunks 拼接成 Prompt，发送给 API。\n        \"\"\"\n        if not context_chunks:\n            return \"抱歉，未找到相关信息。\"\n        \n        # 构造简单的上下文提示词\n        context_text = \"\\n\\n\".join([f\"[{i+1}] {c['content']}\" for i, c in enumerate(context_chunks)])\n        \n        prompt = f\"\"\"你是一个智能助手。请根据",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 5,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

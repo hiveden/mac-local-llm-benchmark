@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "gemma-4-26b-a4b-it-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 154,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 3897,
+  "ttft_ms": 463,
+  "decode_tok_s": 44.85,
+  "response": "这份文档深入解析了 Transformer 架构的核心设计及其演进。其核心要点如下：\n\n1.  **核心机制**：通过自注意力机制取代了传统 RNN 的顺序计算，解决了长距离依赖和并行化问题；多头注意力进一步增强了模型捕捉多维度信息的能力。\n2.  **结构组件**：通过位置编码注入序列顺序信息；利用前馈网络、残差连接与层归一化保证深层训练的稳定性。\n3.  **演进趋势**：现代大模型多采用 Decoder-only 架构，并引入了如 RoPE 位置编码、SwiGLU 激活函数及 Pre-LN 等优化方案。\n4.  **成功原因**：其简洁的架构设计提供了高效的并行能力与强大的扩展性，成为现代 AI 的基石。",
+  "reasoning": null,
+  "memory_before_mb": 16898,
+  "memory_after_mb": 16898,
+  "is_warmup": false,
+  "round": 8,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 6144,
+      "cache_efficiency": 25.9,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "gemma-4-26b-a4b-it-4bit",
+            "block_size": 1024,
+            "indexed_blocks": 1,
+            "indexed_blocks_display": "1",
+            "has_sub_block_cache": false,
+            "partial_block_skips": 7,
+            "partial_tokens_skipped": 2507,
+            "last_partial_tokens_skipped": 407,
+            "last_tokens_to_next_block": 617,
+            "num_files": 1,
+            "total_size_bytes": 230694160,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": -230686720,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 1,
+        "total_size_bytes": 230694160,
+        "effective_block_sizes": [
+          1024
+        ]
+      }
+    }
+  }
+}

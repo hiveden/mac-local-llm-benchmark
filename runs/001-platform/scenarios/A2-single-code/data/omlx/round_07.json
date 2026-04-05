@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1655,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16147,
+  "ttft_ms": 168,
+  "decode_tok_s": 103.57,
+  "response": "这是一个基于纯 Python 实现的最小化 RAG（检索增强生成）系统。\n\n为了保持代码的**可运行性**和**最小化依赖**，本实现将采用以下策略：\n1.  **数据源**：使用本地模拟的文本数据。\n2.  **嵌入模型 (Embedding)**：使用 `sentence-transformers` 库（这是目前社区最通用、轻量级的开源模型库），它比从零写一个神经网络更实用。\n3.  **向量存储**：使用 `numpy` 进行简单的矩阵计算和向量相似度检索（不依赖 Milvus/Chroma 等重型数据库，通过手动计算余弦相似度实现“最小化”）。\n4.  **生成模型**：使用 `transformers` 库中的轻量级模型（如 `facebook/bart-small` 或模拟一个简单的生成逻辑），为了演示效果，这里配置了真实的文本生成流程。\n\n### 前置准备\n\n你需要安装以下库：\n```bash\npip install sentence-transformers transformers numpy\n```\n*注：`sentence-transformers` 会自动下载模型文件，首次运行可能需要较长时间下载。*\n\n### 完整代码实现\n\n```python\nimport numpy as np\nfrom typing import List, Tuple\nfrom sentence_transformers import SentenceTransformer\nfrom transformers import pipeline\n\n# ==========================================\n# 1. 文档切分 (Chunking)\n# ==========================================\ndef chunk_documents(text: str, chunk_size: int = 256, overlap: int = 50) -> List[str]:\n    \"\"\"\n    简单的字符切分策略。\n    实际生产中通常会基于句子或语义边界进行切分。\n    \"\"\"\n    chunks = []\n    start = 0\n    n = len(text)\n    \n    while start < n:\n        end = start + chunk_size\n        # 如果还没切完最后一个块\n        if end > n:\n            chunks.append(text[start:])\n            break\n        \n        # 尝试在边界处切分（简单的按句号切分逻辑，若无句号则按字符）\n        # 这里为了最小实现，直接按字符切分\n        chunk = text[start:end]\n        chunks.append(chunk)\n        start = end - overlap\n    \n    return chunks\n\n# ==========================================\n# 2. Embedding (向量化)\n# ==========================================\nclass VectorStore:\n    def __init__(self, model_name: str = 'all-MiniLM-L6-v2'):\n        # 加载预训练模型 (all-MiniLM-L6-v2 是常用的小巧模型)\n        self.model = SentenceTransformer(model_name)\n        self.vectors = []\n        self.metadata = []\n        self._is_ready = False\n\n    def load_documents(self, texts: List[str]):\n        \"\"\"\n        将文本列表转换为向量并存入内存\n        \"\"\"\n        self.vectors = self.model.encode(texts)\n        self.metadata = texts\n        self._is_ready = True\n        return self.vectors\n\n    def similarity_search(self, query: str, top_k: int = 2) -> List[Tuple[str, float]]:\n        \"\"\"\n        计算查询向量与库中向量的余弦相似度，并返回 Top-K 结果\n        \"\"\"\n        if not self._is_ready:\n            raise Exception(\"请先调用 load_documents\")\n            \n        query_vector = self.model.encode([query])[0]\n        \n        # 计算余弦相似度 (公式: (A·B) / (|A| * |B|))\n        # 由于我们已经训练了 minilm，可以直接计算\n        scores = np.dot(self.vectors, query_vector) / (np.linalg.norm(self.vectors, axis=1) * np.linalg.norm(query_vector))\n        \n        # 获取相似度最高的索引\n        top_indices = np.argsort(scores)[::-1][:top_k]\n        \n        results = []\n        for idx in top_indices:\n            # 返回文本内容和相似度得分\n            results.append((self.metadata[idx], float(scores[idx])))\n            \n        return results\n\n# ==========================================\n# 3. 检索 (Retrieval)\n# ==========================================\ndef retrieve_context(query: str, store: VectorStore, top_k: int = 2) -> str:\n    \"\"\"\n    执行检索步骤，将查到的文档合并为一个上下文字符串\n    \"\"\"\n    results = store.similarity_search(query, top_k=top_k)\n    \n    # 将查到的文本拼接起来，作为检索到的上下文 (Context)\n    retrieved_docs = [doc for doc, score in results]\n    context = \"\\n\\n---\\n\\n\".join(retrieved_docs)\n    \n    return context\n\n# ==========================================\n# 4. 生成 (Generation)\n# ==========================================\nclass",
+  "reasoning": null,
+  "memory_before_mb": 20224,
+  "memory_after_mb": 20224,
+  "is_warmup": false,
+  "round": 7,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 0,
+      "cache_efficiency": 0.0,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 7,
+            "partial_tokens_skipped": 6450,
+            "last_partial_tokens_skipped": 1072,
+            "last_tokens_to_next_block": 976,
+            "num_files": 0,
+            "total_size_bytes": 0,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 0,
+        "total_size_bytes": 0,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

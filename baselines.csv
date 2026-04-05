@@ -1,0 +1,1 @@
+run,provider,model,quantization,engine,prompt,ttft_ms_median,ttft_ms_stdev,decode_tok_s_median,decode_tok_s_stdev,total_ms_median,memory_peak_mb,rounds

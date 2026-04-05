@@ -1,0 +1,35 @@
+{
+  "name": "T1-token-count",
+  "description": "非流式精确 token 计数（补充数据）",
+  "prompt": {
+    "system": "",
+    "user": "用一段话解释 RAG 的工作原理",
+    "max_tokens": 512
+  },
+  "providers": [
+    {
+      "name": "ollama",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "api_key": "",
+      "model": "qwen3.5:35b-a3b-nvfp4",
+      "managed": true
+    },
+    {
+      "name": "omlx",
+      "base_url": "http://127.0.0.1:11435/v1",
+      "api_key": "omlx2026",
+      "model": "Qwen3.5-35B-A3B-4bit",
+      "managed": true
+    },
+    {
+      "name": "mlx-lm",
+      "base_url": "http://127.0.0.1:8002/v1",
+      "api_key": "",
+      "model": "~/.omlx/models/Qwen3.5-35B-A3B-4bit",
+      "managed": false
+    }
+  ],
+  "rounds": 10,
+  "warmup": 1,
+  "timeout": 120
+}

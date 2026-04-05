@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 157,
+  "tokens_generated": 131,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 2329,
+  "ttft_ms": 354,
+  "decode_tok_s": 66.34,
+  "response": "1. **智能客服**：系统自动检索企业最新的产品手册和故障案例库，为客服人员或终端用户生成精准、实时的解决方案，有效减少因知识更新滞后导致的回答错误。\n2. **内部知识助手**：员工提问时，RAG 引擎能快速从海量分散的文档（如会议纪要、技术白皮书）中提炼核心信息，以摘要形式输出经过验证的内部资讯，打破信息孤岛。\n3. **法律与合规审查**：在处理合同或合规报告时，系统依据最新的法律法规和内部政策库检索相关条款，辅助法务人员快速识别风险点并生成严谨的分析报告。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 5,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

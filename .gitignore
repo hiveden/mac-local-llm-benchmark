@@ -1,0 +1,15 @@
+# 归档的原始数据（太大不进 git）
+archive/
+
+# 归档目录下的原始数据不进 git（从 runs/ 搬过来的）
+# runs/ 下的 data/ 进 git — 保证可回退追溯复现
+
+# 系统文件
+.DS_Store
+__pycache__/
+*.pyc
+
+# 临时文件
+*.tmp
+*.log
+.idea/

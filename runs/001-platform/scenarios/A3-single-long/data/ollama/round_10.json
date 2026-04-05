@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 1189,
+  "tokens_generated": 116,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 1848,
+  "ttft_ms": 57,
+  "decode_tok_s": 64.78,
+  "response": "Transformer 突破 RNN 局限，基于自注意力机制实现并行计算与长依赖建模。其核心包含：通过 Q、K、V 线性变换及缩放点积计算注意力分数；利用多头机制捕获多维特征；采用正弦位置编码解决排列不变性问题；结合 FFN 与前馈网络增强表达，并通过残差连接与 Pre-LN 保障训练稳定。架构支持解码器主导的自回归模式，辅以 AdamW 优化及混合精度等现代训练策略，使其能扩展至超大规模模型，成为 AI 基石。",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

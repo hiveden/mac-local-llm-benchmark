@@ -1,0 +1,21 @@
+{
+  "provider": "mlx-lm",
+  "model": "~/.omlx/models/Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 94,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 1282,
+  "ttft_ms": 158,
+  "decode_tok_s": 83.63,
+  "response": "1. **企业智能知识库**：员工通过自然语言提问，系统自动检索内部文档并生成精准的操作指南或政策解答，替代繁琐的人工搜索。\n2. **合规与风控审查**：在合同审核或法律合规检查中，系统实时比对海量法规库与业务数据，快速识别潜在风险点并提供依据。\n3. **个性化客户服务**：客服机器人结合实时订单数据与产品手册，为用户提供包含具体交易细节的定制化解决方案，而非通用话术。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 19236,
+  "memory_after_mb": 19236,
+  "is_warmup": false,
+  "round": 6,
+  "cache": {
+    "type": "none"
+  }
+}

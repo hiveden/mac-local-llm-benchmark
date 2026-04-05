@@ -1,0 +1,53 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 84,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 1805,
+  "ttft_ms": 323,
+  "decode_tok_s": 56.68,
+  "response": "1. **企业知识库问答**：允许员工通过自然语言提问，系统自动检索内部文档并生成精准答案，实现智能自助服务。\n2. **动态合规审核**：在生成合同或报告时，实时检索最新法律法规与政策文件，确保输出内容严格符合现行合规要求。\n3. **个性化营销生成**：根据检索到的客户历史交易与行为数据，为每位用户定制高度相关的产品推荐和营销话术。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 20867,
+  "memory_after_mb": 20867,
+  "is_warmup": false,
+  "round": 7,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 0,
+      "cache_efficiency": 0.0,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 2,
+            "partial_tokens_skipped": 151,
+            "last_partial_tokens_skipped": 133,
+            "last_tokens_to_next_block": 1915,
+            "num_files": 0,
+            "total_size_bytes": 0,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 0,
+        "total_size_bytes": 0,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

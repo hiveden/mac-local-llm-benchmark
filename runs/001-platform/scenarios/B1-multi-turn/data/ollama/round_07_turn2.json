@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 171,
+  "tokens_generated": 108,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 1994,
+  "ttft_ms": 376,
+  "decode_tok_s": 66.75,
+  "response": "1. **智能客服**：系统自动检索最新的产品手册与故障案例库，为客服人员提供精准的问题解答建议，减少人工培训成本并提升响应准确率。\n2. **企业知识助手**：员工可针对内部复杂的规章制度或项目文档发起自然语言提问，由系统实时调取相关条款生成结构化摘要，解决信息检索困难。\n3. **竞品与市场调研**：分析师输入行业关键词，系统自动抓取并聚合最新的第三方研报与市场新闻，辅助生成带有权威数据来源的市场洞察报告。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 7,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

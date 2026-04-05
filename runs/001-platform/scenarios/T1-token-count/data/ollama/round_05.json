@@ -1,0 +1,11 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 20,
+  "completion_tokens": 108,
+  "total_time_ms": 1725,
+  "response": "RAG（检索增强生成）的工作原理是将大型语言模型的“预训练知识”与“实时外部信息”相结合：当用户提出问题时，系统首先利用搜索引擎或向量数据库在庞大的外部知识库中快速检索出最相关的上下文片段，随后将这些 retrieved 信息作为补充提示词（Prompt）一同发送给大模型，引导模型基于这些具体的、最新的事实依据生成精准且可溯源的回答，从而有效弥补了传统大模型因训练数据截止而产生的知识滞后问题，并显著降低了“幻觉”现象的发生。",
+  "stream": false,
+  "is_warmup": false,
+  "round": 5
+}

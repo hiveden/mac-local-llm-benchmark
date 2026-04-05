@@ -1,0 +1,42 @@
+{
+  "name": "B1-multi-turn",
+  "description": "多轮对话 — 缓存命中对 TTFT 的影响",
+  "prompts": {
+    "turn1": {
+      "system": "",
+      "user": "用一段话解释 RAG 的工作原理",
+      "max_tokens": 512
+    },
+    "turn2": {
+      "system": "",
+      "user": "基于上面的解释，给出 3 个 RAG 在企业中的典型应用场景，每个场景用一句话描述",
+      "max_tokens": 512
+    }
+  },
+  "providers": [
+    {
+      "name": "ollama",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "api_key": "",
+      "model": "qwen3.5:35b-a3b-nvfp4",
+      "managed": true
+    },
+    {
+      "name": "omlx",
+      "base_url": "http://127.0.0.1:11435/v1",
+      "api_key": "omlx2026",
+      "model": "Qwen3.5-35B-A3B-4bit",
+      "managed": true
+    },
+    {
+      "name": "mlx-lm",
+      "base_url": "http://127.0.0.1:8002/v1",
+      "api_key": "",
+      "model": "~/.omlx/models/Qwen3.5-35B-A3B-4bit",
+      "managed": false
+    }
+  ],
+  "rounds": 10,
+  "warmup": 1,
+  "timeout": 180
+}

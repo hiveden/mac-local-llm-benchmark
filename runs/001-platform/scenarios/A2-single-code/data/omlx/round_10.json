@@ -1,0 +1,52 @@
+{
+  "provider": "omlx",
+  "model": "Qwen3.5-35B-A3B-4bit",
+  "prompt_tokens": 0,
+  "tokens_generated": 1722,
+  "token_source": "estimated",
+  "completed": true,
+  "total_time_ms": 16183,
+  "ttft_ms": 168,
+  "decode_tok_s": 107.53,
+  "response": "这是一个基于 Python 的 RAG (Retrieval-Augmented Generation) 最小实现示例。为了保持代码的“最小”和“可运行”特性，我们将使用纯 Python 库，不依赖外部复杂的向量数据库服务（如 Milvus 或 Pinecone），而是利用 `chroma-db` 作为内存向量库，并使用 `sentence-transformers` 进行 Embedding（向量提取），使用 `openai` 或本地 LLM 进行生成。\n\n### 核心步骤说明\n\n1.  **文档切分 (Chunking)**：将长文本按字符或段落切割成小块。\n2.  **Embedding**：将文本块转换为向量（数值数组）。\n3.  **检索 (Vector Search)**：将用户问题转换为向量，在向量库中搜索最相似的片段。\n4.  **生成 (Generation)**：将检索到的片段和用户问题组合成 Prompt，发送给 LLM 生成最终答案。\n\n### 前置准备\n\n你需要安装以下库：\n```bash\npip install chromadb sentence-transformers openai\n```\n*(注：`openai` 用于调用大模型，如果你没有 OpenAI Key，可以将代码中的生成部分替换为本地模型如 `llama-cpp-python` 或使用示例中的 Mock 生成逻辑)*\n\n### 最小实现代码\n\n```python\nimport os\nfrom typing import List, Tuple\nimport chromadb\nfrom sentence_transformers import SentenceTransformer\nfrom openai import OpenAI\n\n# ==========================================\n# 1. 配置与初始化\n# ==========================================\nclass RAGSystem:\n    def __init__(self, model_name=\"all-MiniLM-L6-v2\", openai_api_key=None):\n        \"\"\"\n        初始化 RAG 系统\n        :param model_name: 用于生成 Embedding 的模型名称\n        :param openai_api_key: OpenAI API Key (可选，若无则使用 Mock 生成)\n        \"\"\"\n        # 加载 Embedding 模型\n        self.embedding_model = SentenceTransformer(model_name)\n        \n        # 初始化 ChromaDB 向量数据库 (内存模式)\n        self.client = chromadb.Client()\n        self.collection = self.client.get_or_create_collection(name=\"demo_rag_collection\")\n        \n        # 初始化 LLM 客户端 (如果有 Key)\n        self.llm_client = None\n        if openai_api_key:\n            self.llm_client = OpenAI(api_key=openai_api_key)\n\n    # ==========================================\n    # 2. 文档切分 (Chunking)\n    # ==========================================\n    def chunk_text(self, text: str, chunk_size: int = 200, chunk_overlap: int = 50) -> List[str]:\n        \"\"\"\n        简单字符级切分\n        \"\"\"\n        chunks = []\n        start = 0\n        while start < len(text):\n            end = start + chunk_size\n            chunk = text[start:end]\n            chunks.append(chunk)\n            start = end - chunk_overlap  # 保持重叠，防止语义断裂\n        return chunks\n\n    # ==========================================\n    # 3. 向量化与入库 (Embedding & Indexing)\n    # ==========================================\n    def index_document(self, raw_text: str, document_id: str = None):\n        \"\"\"\n        将原始文本切分、向量化并存入向量库\n        \"\"\"\n        if not document_id:\n            document_id = f\"doc_{len(self.collection.get()['ids'])}\"\n        \n        chunks = self.chunk_text(raw_text)\n        \n        # 准备数据\n        embeddings = self.embedding_model.encode(chunks).tolist()\n        ids = [f\"{document_id}_chunk_{i}\" for i in range(len(chunks))]\n        \n        # 写入 ChromaDB\n        self.collection.add(\n            embeddings=embeddings,\n            ids=ids,\n            metadatas=[{\"source\": document_id, \"chunk_index\": i} for i in range(len(chunks))]\n        )\n        print(f\"成功索引了 {len(chunks)} 个文本块，ID: {document_id}\")\n\n    # ==========================================\n    # 4. 检索 (Retrieval)\n    # ==========================================\n    def retrieve(self, query: str, top_k: int = 2) -> List[Tuple[str, dict]]:\n        \"\"\"\n        将查询转换为向量，并检索最相似的内容\n        返回：[(文本内容, 元数据字典), ...]\n        \"\"\"\n        # 将查询向量化\n        query_vector = self.embedding_model.encode([query])[0]\n        \n        # 在向量库中搜索\n        results = self.collection.query(\n            query_embeddings=[query_vector.tolist()],\n            n_results=top_k,\n           ",
+  "reasoning": null,
+  "memory_before_mb": 20224,
+  "memory_after_mb": 20224,
+  "is_warmup": false,
+  "round": 10,
+  "cache": {
+    "type": "ssd-kv-cache",
+    "stats": {
+      "total_cached_tokens": 0,
+      "cache_efficiency": 0.0,
+      "runtime_cache": {
+        "base_path": "/Users/xuelin/.omlx",
+        "ssd_cache_dir": "/Users/xuelin/.omlx/cache",
+        "response_state_dir": "/Users/xuelin/.omlx/cache/response-state",
+        "models": [
+          {
+            "id": "Qwen3.5-35B-A3B-4bit",
+            "block_size": 2048,
+            "indexed_blocks": 0,
+            "indexed_blocks_display": "<2048",
+            "has_sub_block_cache": true,
+            "partial_block_skips": 10,
+            "partial_tokens_skipped": 9666,
+            "last_partial_tokens_skipped": 1072,
+            "last_tokens_to_next_block": 976,
+            "num_files": 0,
+            "total_size_bytes": 0,
+            "hot_cache_max_bytes": 0,
+            "hot_cache_size_bytes": 0,
+            "hot_cache_entries": 0
+          }
+        ],
+        "total_num_files": 0,
+        "total_size_bytes": 0,
+        "effective_block_sizes": [
+          2048
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 157,
+  "tokens_generated": 99,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 1850,
+  "ttft_ms": 358,
+  "decode_tok_s": 66.35,
+  "response": "1. **智能客服与售后支持**：系统实时检索最新的产品文档和维修手册，为客服机器人提供准确依据以回答用户复杂的技术咨询。\n2. **企业知识问答助手**：员工可向内部知识库提问，自动聚合分散在规章制度、项目报告和过往案例中的信息，快速生成定制化答案。\n3. **市场情报与竞品分析**：模型结合爬虫获取的最新行业报告和法律条文，协助分析师生成包含实时数据支撑的深度市场洞察。",
+  "reasoning": null,
+  "turn": 2,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 3,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

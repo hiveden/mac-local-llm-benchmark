@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15717,
+  "ttft_ms": 56,
+  "decode_tok_s": 65.39,
+  "response": "下面是一个极简但完整的 RAG 向量检索实现示例，包含：\n\n1. 文档切分（简单的按字符数分块）  \n2. Embedding（使用 `sentence-transformers` 或本地模型，这里以本地 `all-MiniLM-L6-v2` 为例）  \n3. 向量检索（用 `faiss` 做近似最近邻检索）  \n4. 生成（用简单的 Prompt + LLM 调用，示例中使用 `huggingface_hub` 或直接调用本地模型）\n\n> 说明：  \n> - 如果你没有 GPU / 本地大模型，可以把第 4 步替换为“返回检索到的文本”，即只演示 RAG 的检索部分。  \n> - 代码尽量保持依赖最小，便于你替换成自己的服务（如 API、本地模型等）。\n\n---\n\n## 依赖安装\n\n```bash\npip install sentence-transformers faiss-cpu transformers torch\n# 如果你用 HuggingFace API，可以额外：\n# pip install huggingface_hub\n```\n\n---\n\n## 完整代码示例\n\n```python\nfrom typing import List, Tuple, Optional\nimport re\n\nimport numpy as np\nfrom sentence_transformers import SentenceTransformer\nimport faiss\nfrom transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline\n\n\n# =========================\n# 1. 文档切分（简单版）\n# =========================\ndef split_documents(texts: List[str], chunk_size: int = 500, overlap: int = 50) -> List[Tuple[int, str]]:\n    \"\"\"\n    将多个文档按固定大小和重叠切分成小块。\n    返回 [(chunk_index, text), ...]\n    \"\"\"\n    chunks = []\n    idx = 0\n    for doc in texts:\n        # 简单按字符数切分，可按句子、段落等改进\n        while idx < len(doc):\n            chunk_text = doc[idx : idx + chunk_size]\n            if len(chunk_text) == 0:\n                break\n            chunks.append((idx // chunk_size, chunk_text))\n            idx += chunk_size - overlap\n            if idx >= len(doc):\n                break\n            # 尽量在句子边界切分（简化版）\n            last_period = chunk_text.rfind('.')\n            if last_period != -1 and last_period > chunk_size * 0.5:\n                chunk_text = chunk_text[:last_period + 1]\n                chunks[-1] = (chunks[-1][0], chunk_text)\n    return chunks\n\n\n# =========================\n# 2. Embedding 模型构建\n# =========================\nclass SimpleEmbedder:\n    def __init__(self, model_name: str = \"all-MiniLM-L6-v2\"):\n        self.model = SentenceTransformer(model_name)\n\n    def embed_texts(self, texts: List[str]) -> np.ndarray:\n        \"\"\"\n        返回 shape=(len(texts), dim) 的 numpy 数组\n        \"\"\"\n        embeddings = self.model.encode(\n            texts, show_progress_bar=False, convert_to_numpy=True\n        )\n        return embeddings\n\n\n# =========================\n# 3. 向量检索（Faiss）\n# =========================\nclass SimpleRetriever:\n    def __init__(self, embedder: SimpleEmbedder):\n        self.embedder = embedder\n        self.index: Optional[faiss.Index] = None\n        self.chunks: List[Tuple[int, str]] = []  # [(chunk_id, text), ...]\n\n    def build_index(self, chunks: List[Tuple[int, str]]):\n        \"\"\"\n        构建 Faiss 索引并存储切分块信息。\n        \"\"\"\n        if not chunks:\n            return\n\n        self.chunks = chunks\n        texts = [text for _, text in chunks]\n        embeddings = self.embedder.embed_texts(texts)\n\n        dim = embeddings.shape[1]\n        # L2 距离\n        index = faiss.IndexFlatL2(dim)\n        index.add(embeddings.astype(\"float32\"))\n\n        self.index = index\n\n    def search(self, query: str, top_k: int = 3) -> List[Tuple[int, str]]:\n        \"\"\"\n        根据 query 返回 top_k 个相关 chunk。\n        返回 [(chunk_id, text), ...]\n        \"\"\"\n        if self.index is None or self.chunks is None:\n            raise RuntimeError(\"检索索引尚未构建\")\n\n        q_emb = self.embedder.embed_texts([query])[0].reshape(1, -1).astype(\"float32\")\n        _, dists = self.index.search(q_emb, top_k)\n        _, indices = dists  # shape (1",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 8,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}

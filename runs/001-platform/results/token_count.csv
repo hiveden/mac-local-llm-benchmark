@@ -1,0 +1,4 @@
+provider,rounds,completion_tokens_median,completion_tokens_stdev,total_ms_median
+omlx,9,118,11.97,1959
+ollama,9,100,14.54,1602
+mlx-lm,9,100,0.0,1277

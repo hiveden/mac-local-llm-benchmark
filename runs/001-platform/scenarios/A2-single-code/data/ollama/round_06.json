@@ -1,0 +1,21 @@
+{
+  "provider": "ollama",
+  "model": "qwen3.5:35b-a3b-nvfp4",
+  "prompt_tokens": 48,
+  "tokens_generated": 1024,
+  "token_source": "api",
+  "completed": true,
+  "total_time_ms": 15556,
+  "ttft_ms": 55,
+  "decode_tok_s": 66.06,
+  "response": "这是一个基于 **纯 Python** 和 **LangChain** 实现的 RAG（检索增强生成）最小化示例。它不依赖复杂的数据库或庞大的框架配置，而是使用内存中的列表来模拟向量数据库，非常适合理解核心原理。\n\n### 核心步骤概览\n1.  **文档切分 (Chunking)**: 将长文本分割成小块。\n2.  **Embedding**: 将文本块转化为向量（数字数组）。\n3.  **检索 (Retrieval)**: 计算查询向量与文档向量的相似度，找到最相关的内容。\n4.  **生成 (Generation)**: 将检索到的内容组合到提示词中，让大模型生成答案。\n\n---\n\n### 前置准备\n\n你需要安装 `langchain` 及其依赖库。为了简化环境，我们使用开源免费的 embedding 模型（如通过 `sentence-transformers`）和模拟的 LLM。\n\n```bash\npip install langchain sentence-transformers torch\n```\n\n> **注意**：代码中我将使用 `SentenceTransformer` 作为 Embedder，因为它轻量且支持本地运行，无需 API Key。对于生成器，我们使用一个模拟的函数来演示流程（实际生产中请替换为真实的 LLM API）。\n\n### 完整代码实现\n\n```python\nimport numpy as np\nfrom langchain.text_splitter import CharacterTextSplitter\nfrom typing import List, Dict, Any\n\n# --- 1. 模拟 Embedding 服务 (使用开源模型 sentence-transformers) ---\n# 实际生产中可替换为 OpenAIEmbeddings 等\ntry:\n    from sentence_transformers import SentenceTransformer\n    \n    class SimpleEmbedder:\n        def __init__(self):\n            # 加载一个轻量级中文/通用模型，如 'paraphrase-multilingual-MiniLM-L12-v2'\n            self.model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')\n            \n        def embed_documents(self, texts: List[str]) -> List[List[float]]:\n            embeddings = self.model.encode(texts, show_progress_bar=False)\n            return [e.tolist() for e in embeddings]\n\n        def embed_query(self, text: str) -> List[float]:\n            embedding = self.model.encode([text], show_progress_bar=False)[0]\n            return embedding.tolist()\n            \nexcept ImportError:\n    print(\"请安装 sentence-transformers: pip install sentence-transformers\")\n    # 如果无法加载模型，我们将使用一个占位符逻辑（仅用于演示流程，实际检索无效）\n    class SimpleEmbedder:\n        def embed_documents(self, texts): return []\n        def embed_query(self, text): return []\n\nembedder = SimpleEmbedder()\n\n# --- 2. 模拟向量数据库 (Vector Store) ---\nclass VectorStore:\n    def __init__(self):\n        self.documents = []      # 存储原始文本块\n        self.embeddings = []     # 存储向量\n        \n    def add_texts(self, texts: List[str]) -> None:\n        embeddings = embedder.embed_documents(texts)\n        if not embeddings or len(embeddings[0]) == 0:\n            raise ValueError(\"Embedding failed. Check model installation.\")\n        \n        for text, embedding in zip(texts, embeddings):\n            self.documents.append(text)\n            self.embeddings.append(np.array(embedding))\n            \n    def similarity_search(self, query: str, k: int = 2) -> List[str]:\n        \"\"\"计算余弦相似度并返回最相关的 k 个文档\"\"\"\n        query_vec = np.array(embedder.embed_query(query))\n        \n        # 计算余弦相似度: (A . B) / (||A|| * ||B||)\n        # 为了简化，我们使用欧氏距离归一化或直接点积（对于归一化向量）\n        # 这里手动实现余弦相似度以确保无依赖\n        \n        sims = []\n        for i, doc_vec in enumerate(self.embeddings):\n            # 计算点积\n            dot_product = np.dot(query_vec, doc_vec)\n            # 计算范数 (Norm)\n            norm_q = np.linalg.norm(query_vec)\n            norm_d = np.linalg.norm(doc_vec)\n            \n            if norm_q > 0 and norm_d > 0:\n                cosine_sim = dot_product / (norm_q * norm_d)\n                sims.append((cosine_sim, self.documents[i]))\n        \n        # 按相似度排序，取前 k 个\n        sims.sort(key=lambda x: x[0], reverse=True)\n        return [item[1] for item in sims[:k]]\n\n# --- 3. 模拟 LLM 生成器 ---\nclass SimpleLLM:\n    def generate(self, context: str, question: str",
+  "reasoning": null,
+  "memory_before_mb": 21504,
+  "memory_after_mb": 21504,
+  "is_warmup": false,
+  "round": 6,
+  "cache": {
+    "type": "kv-cache-snapshot",
+    "model_in_memory": true
+  }
+}
