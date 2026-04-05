@@ -249,6 +249,51 @@ stop_provider() {
     fi
 }
 
+# ---- 轮间清理（消除 KV cache 对下一轮的影响）----
+# 参数: provider_name, model, api_key, base_url, managed
+# 卸载模型 → 等内存释放 → 重新预热
+# mlx-lm 无跨请求缓存，跳过
+inter_round_cleanup() {
+    local provider_name="$1"
+    local model="$2"
+    local api_key="$3"
+    local base_url="$4"
+    local managed="$5"
+
+    case "$provider_name" in
+        ollama)
+            ollama stop "$model" 2>/dev/null || true
+            ;;
+        omlx)
+            local omlx_base="${base_url%/v1}"
+            # 重新 login 确保 cookie 有效
+            curl -s --noproxy '*' -c /tmp/omlx-bench-cookies.txt \
+                "$omlx_base/admin/api/login" \
+                -X POST -H "Content-Type: application/json" \
+                -d "{\"api_key\": \"$api_key\"}" > /dev/null 2>&1 || true
+            # 查实际 loaded model ID 再 unload
+            for loaded_id in $(curl -s --noproxy '*' -H "Authorization: Bearer $api_key" \
+                "$omlx_base/v1/models" 2>/dev/null | python3 -c "
+import sys,json
+try:
+    for m in json.load(sys.stdin).get('data',[]):
+        print(m['id'])
+except: pass
+" 2>/dev/null || true); do
+                curl -s --noproxy '*' -b /tmp/omlx-bench-cookies.txt \
+                    "$omlx_base/admin/api/models/$loaded_id/unload" -X POST > /dev/null 2>&1 || true
+            done
+            ;;
+        mlx-lm)
+            # 无跨请求缓存，跳过
+            return 0
+            ;;
+    esac
+
+    sleep 5
+    warmup_provider "$provider_name" "$base_url" "$api_key" "$model" "$managed"
+}
+
 # ---- Ollama NDJSON 流式请求 ----
 # token 估算 fallback (len // 2) 仅在 API 不返回 token 计数时触发（正常不会）。
 # 已通过 token_source: "estimated" 标记，analyze.py 会输出警告。

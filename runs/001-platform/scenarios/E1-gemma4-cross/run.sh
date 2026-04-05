@@ -96,6 +96,8 @@ with open('$P_DATA_DIR/_env_baseline.json', 'w') as f:
         send_request "$P_URL" "$P_KEY" "$P_MODEL" "$P_NAME" "$OUTPUT" "$MESSAGES" "$MAX_TOKENS" > /dev/null
         MEM_AFTER=$(get_memory "$P_NAME")
 
+        # 如果 API 返回错误导致 0 token 文件，analyze.py 会过滤掉 (decode_tok_s == 0)。
+        # 重跑时 rm 该文件即可。
         if [ -f "$OUTPUT" ]; then
             IS_WARMUP=$( [ "$round" -le "$WARMUP" ] && echo "True" || echo "False" )
             append_metadata "$OUTPUT" "$MEM_BEFORE" "$MEM_AFTER" "$IS_WARMUP" "$round" "$CACHE_INFO"
@@ -103,6 +105,9 @@ with open('$P_DATA_DIR/_env_baseline.json', 'w') as f:
         else
             echo "FAILED"
         fi
+
+        # 轮间清理: 卸载模型消除 KV cache，确保下一轮是无缓存的冷启动
+        inter_round_cleanup "$P_NAME" "$P_MODEL" "$P_KEY" "$P_URL" "$P_MANAGED"
     done
 
     stop_provider "$P_NAME"

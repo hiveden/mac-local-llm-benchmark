@@ -105,6 +105,9 @@ with open('$P_DATA_DIR/_env_baseline.json', 'w') as f:
         else
             echo "FAILED"
         fi
+
+        # 轮间清理: 卸载模型消除 KV cache，确保下一轮是无缓存的冷启动
+        inter_round_cleanup "$P_NAME" "$P_MODEL" "$P_KEY" "$P_URL" "$P_MANAGED"
     done
 
     stop_provider "$P_NAME"

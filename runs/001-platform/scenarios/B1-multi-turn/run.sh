@@ -185,48 +185,8 @@ with open('$OUTPUT_T2', 'w') as f: json.dump(d, f, indent=2, ensure_ascii=False)
             echo "FAILED"
         fi
 
-        # ---- 轮间清理：卸载模型清除缓存，确保下一轮 Turn 1 是无缓存状态 ----
-        case "$P_NAME" in
-            ollama)
-                ollama stop "$P_MODEL" 2>/dev/null || true
-                ;;
-            omlx)
-                local_omlx_base=$(python3 -c "
-import json
-ps = json.load(open('$CONFIG'))['providers']
-omlx = next((p for p in ps if p['name']=='omlx'), None)
-print(omlx['base_url'].replace('/v1','') if omlx else '')
-" 2>/dev/null || echo "")
-                # 重新 login 确保 cookie 有效（长时间测试中 cookie 可能过期）
-                curl -s --noproxy '*' -c /tmp/omlx-bench-cookies.txt \
-                    "$local_omlx_base/admin/api/login" \
-                    -X POST -H "Content-Type: application/json" \
-                    -d "{\"api_key\": \"$P_KEY\"}" > /dev/null 2>&1 || true
-                # 查实际 loaded model ID 再 unload（config 模型名可能与 loaded ID 不同）
-                for loaded_id in $(curl -s --noproxy '*' -H "Authorization: Bearer $P_KEY" \
-                    "$local_omlx_base/v1/models" 2>/dev/null | python3 -c "
-import sys,json
-try:
-    for m in json.load(sys.stdin).get('data',[]):
-        print(m['id'])
-except: pass
-" 2>/dev/null || true); do
-                    UNLOAD_RESULT=$(curl -s --noproxy '*' -b /tmp/omlx-bench-cookies.txt \
-                        "$local_omlx_base/admin/api/models/$loaded_id/unload" -X POST 2>&1 || echo '{"error":"curl failed"}')
-                    echo "   oMLX unload $loaded_id: $UNLOAD_RESULT"
-                done
-                ;;
-            # mlx-lm: 无持久化缓存，不需要清理
-        esac
-
-        # 等待模型卸载和内存释放（oMLX unload 是异步的）
-        sleep 5
-
-        # 重新预热（重新加载模型，模拟干净状态）
-        # mlx-lm 无跨请求缓存，跳过轮间重启避免多余 JIT 干扰
-        if [ "$P_NAME" != "mlx-lm" ]; then
-            warmup_provider "$P_NAME" "$P_URL" "$P_KEY" "$P_MODEL" "$P_MANAGED"
-        fi
+        # 轮间清理: 卸载模型消除 KV cache，确保下一轮 Turn 1 是无缓存的冷启动
+        inter_round_cleanup "$P_NAME" "$P_MODEL" "$P_KEY" "$P_URL" "$P_MANAGED"
     done
 
     stop_provider "$P_NAME"

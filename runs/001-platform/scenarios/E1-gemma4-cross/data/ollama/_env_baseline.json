@@ -1,6 +1,0 @@
-{
-  "timestamp": "2026-04-05T15:15:00Z",
-  "provider": "ollama",
-  "model": "gemma4:26b",
-  "free_memory_mb": 5025
-}
