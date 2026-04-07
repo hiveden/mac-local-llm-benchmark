@@ -28,16 +28,19 @@ Brief 02 翻车点:
 | B1 多轮对话 | [DESIGN.md](scenarios/B1-multi-turn/DESIGN.md) | Ollama / oMLX / mlx-lm | 缓存命中对 TTFT 的影响 |
 | E1 Gemma4 跨引擎 | [DESIGN.md](scenarios/E1-gemma4-cross/DESIGN.md) | Ollama / oMLX | llama.cpp vs MLX 差距 |
 | E2 Gemma4 长 prompt | [DESIGN.md](scenarios/E2-gemma4-long/DESIGN.md) | Ollama / oMLX | 长 prompt prefill 效率差距 |
+| T1 Token 计数校准 | [DESIGN.md](scenarios/T1-token-count/DESIGN.md) | Ollama / oMLX / mlx-lm | 非流式精确 token 计数（修正流式 tok/s 估算） |
 
 ## 场景设计取舍
 
-### 为什么是这 5 个场景
+### 为什么是这些场景
 
 RUN 01 的主题是**平台对比**（Ollama vs oMLX vs mlx-lm），不是模型评测或功能覆盖。场景选择的原则是：用最少的变量覆盖三个平台的核心差异。
 
 - **A1/A2/A3 单轮请求**: 控制变量（同模型、同 prompt、不同平台），测裸速差异。三个 prompt 覆盖短/中/长三种输入长度，确保结论不依赖特定 prompt 类型
 - **B1 多轮对话**: oMLX 的核心差异化能力是 SSD KV cache，单轮请求测不出来。这个场景专门验证缓存命中对 TTFT 的影响
 - **E1 Gemma4 跨引擎**: 直接回应评论区"Ollama MLX 是否对所有模型生效"的质疑。Gemma4 在 Ollama 走 llama.cpp，在 oMLX 走 MLX，是展示引擎差距最直观的对比
+- **E2 Gemma4 长 prompt**: 在 E1 基础上拉长 prompt，验证 llama.cpp vs MLX 在 prefill 阶段的效率差距是否随上下文增长而放大
+- **T1 Token 计数校准**: 补充场景。oMLX/mlx-lm 流式响应不返回 completion_tokens，A1-A3/E1-E2 的 tok/s 依赖估算。T1 用非流式请求对所有平台跑一遍精确 token 计数，分析阶段用于修正流式场景的 tok/s
 
 ### 为什么不测以下场景
 
@@ -90,4 +93,4 @@ Qwen3.5 默认开启 thinking 模式。关闭的原因：
 
 ## 原始需求文档
 
-见 docs/run-01/brief-03-plan.md
+见 private-docs/run-01/brief-03-plan.md（不开源）

@@ -25,37 +25,46 @@ mac-local-llm-benchmark/
 ├── ARCHITECTURE.md                # 本文件
 ├── CLAUDE.md                      # 项目原则和技术约定
 ├── DISCLAIMER.md                  # 测试边界声明（所有 RUN 继承）
-├── CHANGELOG.md                   # 每次新增 RUN 记录
 ├── baselines.csv                  # 从各期提取的关键指标（持续增长的资产）
 │
+├── config/                        # 早期参考模板（providers/prompts），不被场景使用
+│
 ├── scripts/                       # 共享工具（分析、系统信息）
-│   ├── analyze.py                 # 数据分析 + 图表 + 报告生成
+│   ├── analyze.py                 # 数据分析 + Markdown 报告 + CSV 导出
 │   └── sysinfo.sh                 # 硬件/软件环境自动采集（备用）
 │
 ├── runs/                          # 每期一个目录
 │   └── 001-platform/              # RUN 01: 三平台对比
 │       ├── README.md              # 本期总览 + 场景设计取舍
+│       ├── DECISIONS.md           # 代码审核中的设计决策和取舍
+│       ├── KNOWN_ISSUES.md        # 已知数据问题和注意事项
+│       ├── RETRO.md               # 复盘记录
+│       ├── my-take.md             # 个人观点
 │       ├── sysinfo.json           # 环境快照（首次运行时自动采集）
+│       ├── lib.sh                 # 共享函数库（被各场景 run.sh source）
 │       ├── scenarios/             # 每个场景完全独立
 │       │   ├── A1-single-short/   # 短问答
 │       │   │   ├── DESIGN.md      # 测试设计文档
 │       │   │   ├── config.json    # 场景参数（providers, prompt, rounds）
-│       │   │   ├── run.sh         # 自包含测试脚本
+│       │   │   ├── run.sh         # 自包含测试脚本（source ../../lib.sh）
 │       │   │   ├── data/          # 原始数据（每轮一个 JSON）
 │       │   │   └── results/       # 分析结果
 │       │   ├── A2-single-code/    # 代码生成
 │       │   ├── A3-single-long/    # 长文本总结
 │       │   ├── B1-multi-turn/     # 多轮对话（缓存命中）
-│       │   └── E1-gemma4-cross/   # Gemma4 跨引擎
-│       ├── results/               # 跨场景汇总
-│       └── my-take.md             # 个人观点
+│       │   ├── E1-gemma4-cross/   # Gemma4 跨引擎
+│       │   ├── E2-gemma4-long/    # Gemma4 长 prompt prefill
+│       │   └── T1-token-count/    # token 计数口径校准
+│       └── results/               # 跨场景汇总
 │
 ├── archive/                       # 归档（.gitignore）
 │
-└── docs/                          # 频道相关（不开源）
+└── private-docs/                  # 频道相关（不开源）
     └── run-01/
         └── brief-03-plan.md       # 需求文档存档
 ```
+
+> 注：`lib.sh` 是 RUN 01 的共享函数库（Bash 实现，历史原因）。它提供了 provider 适配（Ollama/oMLX/mlx-lm 的请求/解析/内存采集差异）和通用流程函数。"场景独立"指的是每个场景的数据和配置互不污染，但底层 provider 适配函数仍然集中在 `lib.sh` 里复用。新的 RUN 起改为纯 Python 实现（见 CLAUDE.md 技术约定）。
 
 ## 核心设计原则
 
@@ -78,7 +87,7 @@ bash run.sh ollama       # 只跑指定 provider
 bash run.sh --list       # 列出可用 provider
 ```
 
-### 2. 每个 provider 的差异内聚在 run.sh 中
+### 2. 每个 provider 的差异内聚在 lib.sh 中
 
 三个平台关闭 thinking、流式 API 格式、内存采集方式都不同：
 
@@ -88,7 +97,7 @@ bash run.sh --list       # 列出可用 provider
 | 流式格式 | NDJSON（私有 API） | SSE（OpenAI 兼容） | SSE（OpenAI 兼容） |
 | 内存采集 | `ollama ps` VRAM | ps RSS | ps RSS |
 
-这些差异全部内聚在 run.sh 的 `send_request` 函数中，按 provider_name 分支处理。
+这些差异全部内聚在 `runs/001-platform/lib.sh` 中，按 provider_name 分支处理。各场景的 `run.sh` 通过 `source lib.sh` 复用底层适配函数，自身只负责场景特有的流程编排（轮次、prompt、数据落盘路径）。
 
 ### 3. 标准指标体系
 
@@ -162,8 +171,7 @@ baselines.csv 是项目持续增长的核心资产，后续新工具出来直接
 
 ## 技术栈
 
-- 测试脚本: Bash + Python（确定性，不用 LLM）
-- 数据分析: Python (pandas + matplotlib)
-- 图表: matplotlib → PNG
-- 报告: Python → Markdown
+- 测试脚本: Bash + 内嵌 Python（RUN 01 历史实现；RUN 02 起改为纯 Python，见 CLAUDE.md）
+- 数据分析: Python 标准库（json + statistics，无第三方依赖）
+- 报告: Markdown（`results/summary.md`）+ CSV（`results/raw.csv`）
 - 版本控制: Git（每个场景独立 commit，每期打 tag）
